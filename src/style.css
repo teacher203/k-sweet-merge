@@ -17,3 +17,31 @@
 
 /* Stage progression / chapter clear */
 .stage-progress{background:linear-gradient(145deg,#fff9f1,#ffedda);border:1px solid #eecab2;border-radius:19px;padding:15px;margin:14px 0 16px;box-shadow:0 4px 12px #b5765421}.stage-progress-header{display:flex;justify-content:space-between;align-items:center;gap:8px}.stage-progress-header>div{display:flex;flex-direction:column;gap:5px}.stage-progress-header b{font-size:16px;color:#915a4e}.stage-progress-header small{font-size:11px;color:#aa8072}.stage-progress-header>span{font-size:11px;font-weight:800;color:#bb6e57;white-space:nowrap}.stage-goals{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}.stage-goals span{background:#fff4e9;border-radius:12px;border:1px solid #efd8c7;padding:6px 9px;font-size:12px;font-weight:700;color:#a28377}.stage-goals span.done{background:#e1f3dd;border-color:#b3daa9;color:#4e8556}.stage-win{padding:14px;margin-top:12px;background:linear-gradient(135deg,#fce9f5,#fff2c8);border:1px solid #f0c9dc;border-radius:14px;animation:stageWinGlow 2.5s infinite}.stage-win strong{color:#a85b7e;font-size:17px}.stage-win p{font-size:12px;line-height:1.55;color:#845c66;margin:7px 0 13px}.stage-win button{width:100%;color:white;background:linear-gradient(100deg,#e47b92,#f19d72);border:0;font-weight:900;padding:13px;box-shadow:0 3px 0 #ca6b84}.hero.stage-theme-1{background:linear-gradient(145deg,#c7f0ff,#fdf6dd)}.hero.stage-theme-2{background:linear-gradient(145deg,#d9d4ff,#ffdfdd)}.hero.stage-theme-3{background:linear-gradient(145deg,#fbe2f2,#fff3d5)}.hero.stage-theme-1 .cafe-scene{filter:saturate(1.16) hue-rotate(13deg)}.hero.stage-theme-2 .cafe-scene{filter:brightness(.9) hue-rotate(26deg)}.hero.stage-theme-3 .cafe-scene{filter:saturate(1.1)}@keyframes stageWinGlow{0%,100%{box-shadow:0 0 0 #e9a1bb00}50%{box-shadow:0 0 15px #e9a1bb55}}
+
+/* Stage-specific full UI themes — unmistakably different from the first cafe */
+.app.app-stage-1{background:linear-gradient(180deg,#e9faff 0%,#f7fffc 50%,#fff9e9 100%);color:#345967}
+.app-stage-1 header h1 em{color:#21a8bd}
+.app-stage-1 .stats span{background:#f5ffff;color:#42778a}
+.app-stage-1 .hero{background:linear-gradient(155deg,#b8eaf5,#effbfc 60%,#fff0ca);border:2px solid #8fd6e7}
+.app-stage-1 .hero h2{color:#286d89}
+.app-stage-1 .hero .cafe-scene{border:2px solid #a6e4e6;box-shadow:0 9px 23px #50abb143}
+.app-stage-1 .stage-progress{background:linear-gradient(145deg,#e3f7fe,#fff9e5);border-color:#a6dde7}
+.app-stage-1 .stage-progress-header b{color:#2e7b90}
+.app-stage-1 .stage-goals span{background:#f4feff;border-color:#b3e3e9;color:#55838d}
+.app-stage-1 .stage-goals span.done{background:#dff2df;border-color:#b2dab5;color:#4c815e}
+.app-stage-1 nav button.active{background:#39adc0;border-color:#39adc0;color:white}
+.app-stage-1 .board{background:linear-gradient(150deg,#b7e6f1,#dff4e8);border:3px solid #86cbd9}
+.app-stage-1 .tile{background:#f6fffd;border-color:#def4f8;box-shadow:0 3px 0 #9bcfda}
+.app-stage-1 .tile.chosen{background:#d9f5ff;border-color:#47aaca}
+.app-stage-1 .tile.empty{background:#b0d8dc;border-color:#acd7de}
+.app-stage-1 .primary,.app-stage-1 .reward-center .coin-gift{background:linear-gradient(100deg,#49b0c4,#288ead);color:#fff}
+.app-stage-1 .notice{background:#e4f8f8;color:#32788b}
+.app-stage-1 .free-energy{background:#dbf5f3}
+.app-stage-1 .shop-scene{background:linear-gradient(145deg,#bcecf8,#fff4d8)}
+.app-stage-2{background:linear-gradient(180deg,#f2edff,#fbf7ff)}
+.app-stage-2 nav button.active,.app-stage-2 .primary{background:#9383d6;color:white}
+.app-stage-2 .board{background:#e4dcf8}
+.app-stage-2 .tile.chosen{border-color:#9782d6;background:#eae1ff}
+.app-stage-3{background:linear-gradient(180deg,#ffeff8,#fff9f2)}
+.app-stage-3 nav button.active,.app-stage-3 .primary{background:#e98dab;color:white}
+.app-stage-3 .board{background:#fbdce8}

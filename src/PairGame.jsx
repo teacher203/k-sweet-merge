@@ -1,0 +1,27 @@
+import React,{useEffect,useRef,useState} from 'react';
+import './pairgame.css';
+const ICONS=['songpyeon','yakgwa','injeolmi','hotteok','juak','mongsil'];
+const SIZE=6;
+const makeBoard=()=>{const vals=[];for(let i=0;i<18;i++){const v=i%ICONS.length;vals.push(v,v)}for(let i=vals.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[vals[i],vals[j]]=[vals[j],vals[i]]}return vals};
+const toRC=i=>[Math.floor(i/SIZE)+1,i%SIZE+1];
+const nodeKey=(r,c,d,b)=>[r,c,d,b].join('-');
+function findPath(board,a,z){if(a===z||board[a]===null||board[a]!==board[z])return null;
+const [sr,sc]=toRC(a),[tr,tc]=toRC(z);const dirs=[[0,1],[1,0],[0,-1],[-1,0]];
+const q=[{r:sr,c:sc,d:-1,b:0,path:[[sr,sc]]}],seen=new Set();
+for(let qi=0;qi<q.length;qi++){const v=q[qi];if(v.r===tr&&v.c===tc)return v.path;
+for(let d=0;d<4;d++){const nr=v.r+dirs[d][0],nc=v.c+dirs[d][1],b=v.b+(v.d===-1||v.d===d?0:1);
+if(nr<0||nr>SIZE+1||nc<0||nc>SIZE+1||b>2)continue;
+if(nr>=1&&nr<=SIZE&&nc>=1&&nc<=SIZE&&!(nr===tr&&nc===tc)&&board[(nr-1)*SIZE+nc-1]!==null)continue;
+const key=nodeKey(nr,nc,d,b);if(seen.has(key))continue;seen.add(key);q.push({r:nr,c:nc,d,b,path:[...v.path,[nr,nc]]});
+}}return null}
+function hasMove(board){for(let i=0;i<board.length;i++)if(board[i]!==null)for(let j=i+1;j<board.length;j++)if(board[i]===board[j]&&findPath(board,i,j))return true;return false}
+function shuffledBoard(board){let occupied=board.map((v,i)=>v===null?-1:i).filter(i=>i>=0),vals=occupied.map(i=>board[i]);for(let tries=0;tries<80;tries++){for(let i=vals.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[vals[i],vals[j]]=[vals[j],vals[i]]}const next=board.slice();occupied.forEach((i,k)=>next[i]=vals[k]);if(hasMove(next))return next}return board}
+const seconds=90;
+export default function PairGame({onReward,play,lang='ko'}){const [board,setBoard]=useState(()=>shuffledBoard(makeBoard()));const [picked,setPicked]=useState(-1);const [time,setTime]=useState(seconds);const [running,setRunning]=useState(false);const [ended,setEnded]=useState(false);const [score,setScore]=useState(0);const [pairs,setPairs]=useState(0);const [combo,setCombo]=useState(0);const [line,setLine]=useState(null);const [feedback,setFeedback]=useState('같은 디저트를 연결하세요! 꺾임은 최대 2번이에요.');const rewarded=useRef(false);const lastMatch=useRef(0);const beginAt=useRef(0);
+useEffect(()=>{if(!running||ended)return;const handle=setInterval(()=>{const left=Math.max(0,Math.ceil((beginAt.current-Date.now())/1000));setTime(left);if(left===0){setRunning(false);setEnded(true)}},200);return()=>clearInterval(handle)},[running,ended]);
+useEffect(()=>{if(!ended||rewarded.current)return;rewarded.current=true;onReward(Math.min(120,Math.floor(score/100)));},[ended,score,onReward]);
+function restart(){setBoard(shuffledBoard(makeBoard()));setPicked(-1);setTime(seconds);setRunning(false);setEnded(false);setScore(0);setPairs(0);setCombo(0);setLine(null);setFeedback('새 게임 준비! 시작 버튼을 눌러주세요.');rewarded.current=false;lastMatch.current=0}
+function start(){beginAt.current=Date.now()+seconds*1000;setTime(seconds);setRunning(true);setFeedback('같은 그림 두 개를 빠르게 찾아 연결해요!');play('tab')}
+function choose(i){if(!running||ended||board[i]===null)return;if(picked===-1){setPicked(i);play('tap');return}if(picked===i){setPicked(-1);return}const path=findPath(board,picked,i);if(path){const now=Date.now(),nextCombo=now-lastMatch.current<3500?combo+1:1;lastMatch.current=now;setCombo(nextCombo);const earned=100+Math.min(5,nextCombo-1)*25;setScore(v=>v+earned);setPairs(v=>v+1);const next=board.slice();next[picked]=null;next[i]=null;setBoard(next);setLine(path);setTimeout(()=>setLine(null),360);setFeedback('✨ 연결 성공! +'+earned+'점 · '+nextCombo+'콤보');play('merge');if(next.every(v=>v===null)){setRunning(false);setEnded(true)}else if(!hasMove(next)){setBoard(shuffledBoard(next));setFeedback('🎀 새로운 짝을 찾기 쉽게 자동 섞었어요!')}}else{setFeedback('막힌 길이에요! 다른 짝을 골라보세요.');setCombo(0);play('error')}setPicked(-1)}
+const pts=line?.map(([r,c])=>[(c-.5)*100/8,(r-.5)*100/8])||[];
+return <section className="pair-game"><div className="pair-top"><div><h3>🎀 디저트 짝꿍 사천성</h3><p>90초 안에 같은 디저트 2개를 연결하세요!</p></div><span className="pair-time">⏱ {time}초</span></div><div className="pair-stats"><span>⭐ 점수 <b>{score}</b></span><span>🔥 콤보 <b>{combo}</b></span><span>🍡 짝 <b>{pairs}/18</b></span></div><div className="pair-timer"><i style={{width:(time/seconds*100)+'%'}}/></div><div className="pair-grid-wrap"><div className="pair-grid">{board.map((v,i)=><button key={i} disabled={!running||v===null} onClick={()=>choose(i)} className={'pair-cell '+(v===null?'gone ':'')+(picked===i?'picked':'')} aria-label={v===null?'빈 자리':ICONS[v]}>{v!==null&&<img src={'/mascots/'+ICONS[v]+'.svg'} alt={ICONS[v]}/>}</button>)}</div>{line&&<svg className="pair-line" viewBox="0 0 100 100" preserveAspectRatio="none"><polyline points={pts.map(([x,y])=>x+','+y).join(' ')} fill="none" stroke="#ff5b91" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg>}</div><p className="pair-feedback" role="status">{feedback}</p>{!running&&!ended&&<button className="pair-start" onClick={start}>▶ 90초 게임 시작</button>}{ended&&<div className="pair-result"><strong>🎉 게임 종료!</strong><p>최종 {score}점 · 연결 {pairs}쌍 · 획득 코인 🪙 {Math.min(120,Math.floor(score/100))}</p><button className="pair-start" onClick={restart}>🔄 새 게임 다시 시작</button></div>}{running&&<button className="pair-reset" onClick={()=>{setRunning(false);setEnded(true)}}>⏹ 게임 종료하고 점수 받기</button>}<p className="pair-rules">맞춘 그림 사이가 빈칸을 따라 최대 2번 꺾여 연결되면 사라집니다. 시간이 끝나면 점수에 따라 코인이 지급되고, 새 판으로 다시 즐길 수 있어요.</p></section>}

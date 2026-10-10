@@ -3,3 +3,6 @@
 
 /* Korean illustrated cafe assets */
 .hero{overflow:hidden;background:linear-gradient(165deg,#fcead9,#e9cbb9)}.hero .hanok-art{display:block;width:min(100%,295px);height:145px;object-fit:contain;margin:-6px auto -5px}.hero .decor{position:absolute;top:12px;right:10px;max-width:104px;display:flex;gap:2px;align-items:center;justify-content:flex-end}.hero .decor img{width:39px;height:37px;object-fit:contain;background:#fff8;border-radius:9px;padding:2px}.goods .decor-art{width:100px;height:90px;object-fit:contain;display:block}.goods article{justify-content:space-between;min-height:204px}.hero h2{position:relative;z-index:1}
+
+/* Display the user's actual hanok cafe photo without cropping */
+.hero .hanok-art{width:100%;max-width:100%;height:190px;object-fit:contain;object-position:center;border-radius:15px;margin:0 auto 8px;background:#f8eee6}@media(max-width:360px){.hero .hanok-art{height:155px}}

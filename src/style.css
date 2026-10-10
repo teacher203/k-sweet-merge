@@ -70,3 +70,30 @@
 .app-stage-1 .cafe-editor{background:#e5f9fc}
 .app-stage-1 .shop-scene .cafe-editor{border-color:#60bfd0}
 @media(max-width:370px){.cafe-editor .moveable-decor{width:18%;height:auto;aspect-ratio:1}}
+
+/* Mobile swipe-first merge and quick service missions */
+.swipe-board{touch-action:none;user-select:none;-webkit-user-select:none}
+.swipe-board .tile{touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab;position:relative;transition:transform .12s,box-shadow .12s,border-color .12s}
+.swipe-board .tile:active{cursor:grabbing}
+.swipe-board .tile img{pointer-events:none;-webkit-user-drag:none;user-select:none}
+.swipe-board .tile small{pointer-events:none}
+.swipe-board .tile.chosen{transform:scale(1.08);border:3px solid #ec7b9e;box-shadow:0 2px 16px #e58baf7e;z-index:2}
+.swipe-explain{padding:11px 12px;border-radius:14px;background:linear-gradient(100deg,#ffe4ea,#fff5df);font-size:12px;line-height:1.6;margin:10px 0 12px;color:#965775;text-align:center}
+.swipe-explain b{color:#ba4b78}
+.quick-order-area{padding:12px;margin:8px 0 13px;border-radius:17px;background:linear-gradient(130deg,#fff8f3,#fff4e8);border:1px solid #f1d8c4}
+.quick-order-heading{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:10px}
+.quick-order-heading b{font-size:14px;color:#9d5f4d}
+.quick-order-heading small{font-size:10px;color:#ae8978;text-align:right}
+.quick-order-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.quick-order-card{display:flex;align-items:center;gap:7px;background:#fff;border:1px solid #f1dbcc;border-radius:14px;padding:7px;min-width:0}
+.quick-order-card img{width:40px;height:40px;object-fit:contain;flex:none}
+.quick-order-card>div{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1}
+.quick-order-card strong{font-size:10px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.quick-order-card small{font-size:10px;color:#c48a50}
+.quick-order-card button{font-size:10px;white-space:nowrap;padding:7px 5px;background:#f5e5df;color:#8e6863}
+.quick-order-card button.order-ready{color:white;background:#ea7792;animation:readyPulse 1.9s infinite}
+@keyframes readyPulse{50%{box-shadow:0 0 9px #eb82a988}}
+@media(max-width:410px){.quick-order-cards{grid-template-columns:1fr}.quick-order-card strong{font-size:12px}.quick-order-heading{flex-wrap:wrap}}
+.app-stage-1 .quick-order-area{background:#eefbfb;border-color:#9ad7e4}
+.app-stage-1 .swipe-explain{background:#e7faff;color:#347c8e}
+.app-stage-1 .quick-order-card button.order-ready{background:#40a8bd}

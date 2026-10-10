@@ -97,3 +97,67 @@
 .app-stage-1 .quick-order-area{background:#eefbfb;border-color:#9ad7e4}
 .app-stage-1 .swipe-explain{background:#e7faff;color:#347c8e}
 .app-stage-1 .quick-order-card button.order-ready{background:#40a8bd}
+
+/* K-SWEET CAFE kawaii management refresh */
+.app{background:linear-gradient(180deg,#fff8fa 0%,#fff8ec 54%,#f4faff 100%)}
+header h1{font-weight:900;letter-spacing:-1.4px}
+header h1 em{color:#ef86a9}
+header small{letter-spacing:1px}
+nav{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:7px 1px 10px;overscroll-behavior-x:contain}
+nav::-webkit-scrollbar{display:none}
+nav button{flex:0 0 auto;min-width:76px;padding:11px 9px;font-size:12px;white-space:nowrap;border-radius:13px}
+.welcome-card{padding:17px;border-radius:22px;background:linear-gradient(145deg,#fff1f5,#fff8e9);border:2px solid #f5d7db;text-align:center;margin-bottom:12px}
+.welcome-kicker{display:block;font-size:11px;font-weight:900;letter-spacing:2px;color:#d77c9a;margin-bottom:6px}
+.welcome-card h3{margin:3px 0 6px;font-size:21px;color:#a44f72}
+.welcome-card p{font-size:12px;color:#af7e87;margin:0 0 13px;line-height:1.6}
+.mini-staff{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:10px 0 14px}
+.mini-staff-person{display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px 3px;border-radius:17px;background:#fff9fb;border:2px solid #f9dce8}
+.mini-staff-person img{width:100%;height:100px;object-fit:contain;filter:drop-shadow(0 6px 3px #b98d8a2b);animation:staffBounce 3s ease-in-out infinite}
+.mini-staff-person:nth-child(2) img{animation-delay:.5s}
+.mini-staff-person:nth-child(3) img{animation-delay:1s}
+.mini-staff-person.locked img{opacity:.48;filter:grayscale(.45)}
+.mini-staff-person small{font-size:12px;font-weight:900;color:#a87485}
+.mini-staff-person span{font-size:10px;color:#b58e93}
+@keyframes staffBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.start-play{display:block;width:100%;padding:13px;background:linear-gradient(110deg,#ee84a8,#f5a58a);border:0;color:white;font-size:14px;font-weight:900;border-radius:15px;box-shadow:0 4px 0 #d67d91}
+.cafe-earn{display:flex;justify-content:space-between;align-items:center;gap:10px;background:#f4fffb;border:1px solid #bee6d7;padding:13px;border-radius:16px;margin:12px 0}
+.cafe-earn strong{font-size:13px;color:#448879}
+.cafe-earn p{margin:5px 0 0;font-size:11px;line-height:1.4;color:#729a8f}
+.cafe-earn button{white-space:nowrap;background:#4eb4a5;color:white;font-size:11px;padding:10px}
+.home-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.home-actions button{min-height:116px;background:white;border:2px solid #f4dfe6;border-radius:18px;display:flex;flex-direction:column;gap:5px;justify-content:center;align-items:center;color:#986e83;box-shadow:0 4px 0 #f6e3e8}
+.home-actions button>span{font-size:30px}
+.home-actions b{font-size:13px}
+.home-actions small{font-size:10px;color:#b3919d}
+.home-goals{margin:13px 0;padding:14px;background:linear-gradient(135deg,#fff1db,#fff9eb);border-radius:15px;border:1px solid #efddc9}
+.home-goals strong{font-size:14px;color:#ae795e}
+.home-goals p{font-size:12px;line-height:1.5;color:#a48470}
+.home-goals button{background:#edbb87;color:#6b5347;font-weight:bold;width:100%}
+.staff-grid{display:flex;flex-direction:column;gap:12px;margin:15px 0}
+.staff-card{display:grid;grid-template-columns:94px 1fr;grid-template-rows:auto auto;gap:6px 10px;padding:11px;background:linear-gradient(130deg,#fff,#fff4f5);border:2px solid #f4dfdf;border-radius:18px}
+.staff-card>img{height:110px;width:94px;object-fit:contain;grid-row:1/3}
+.staff-details{min-width:0}
+.staff-details h4{margin:4px 0;font-size:17px;color:#9e6780}
+.staff-details h4 small{display:block;font-size:11px;font-weight:500;color:#b08a9b;margin-top:3px}
+.staff-details p{font-size:12px;color:#876d83;margin:7px 0}
+.staff-details>small{font-size:11px;color:#b57e66}
+.staff-level{display:flex;gap:3px;margin-top:8px}
+.staff-level span{font-size:13px;color:#e3d4db}
+.staff-level span.filled{color:#e98ba7}
+.staff-card>button{grid-column:2;justify-self:stretch;background:#eb91ae;color:white;font-weight:800}
+.staff-card>button:disabled{background:#d3d0ce}
+.staff-total{padding:15px;background:#e9f8f4;border-radius:15px;color:#54877c;display:flex;flex-direction:column;gap:7px}
+.staff-total small{font-size:11px}
+.league-trophy{border-radius:22px;background:linear-gradient(160deg,#fff3d1,#ffdeec);border:2px solid #ecd1a1;padding:28px 15px;font-size:65px;text-align:center;display:flex;align-items:center;flex-direction:column;gap:10px;margin:15px 0}
+.league-trophy strong{font-size:19px;color:#9b6581}
+.league-trophy small{font-size:13px;color:#bf9267}
+.league-rivals{display:flex;flex-direction:column;gap:9px;margin:15px 0}
+.league-rivals>div{display:flex;justify-content:space-between;background:#fff;border:1px solid #f3e5df;border-radius:12px;padding:12px;font-size:14px;color:#876d83}
+.league-page>.sub{margin:12px 0;line-height:1.6}
+.rush-banner{display:flex;justify-content:space-between;align-items:center;gap:8px;background:linear-gradient(110deg,#ffd4e4,#fff2c9);padding:12px;margin:8px 0;border-radius:13px;flex-wrap:wrap}
+.rush-banner.active{border:2px solid #ec93b4;animation:rushPulse 1s infinite alternate}
+.rush-banner b{font-size:15px;color:#b6537f}
+.rush-banner span{font-size:12px;color:#ae6682}
+.rush-banner button{background:#e47b9f;color:white;font-size:12px}
+@keyframes rushPulse{from{box-shadow:0 0 0 #ed92b100}to{box-shadow:0 0 12px #ed92b166}}
+@media(max-width:360px){.staff-card{grid-template-columns:77px 1fr}.staff-card>img{width:77px}.mini-staff-person img{height:80px}}

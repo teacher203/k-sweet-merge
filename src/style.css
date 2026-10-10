@@ -45,3 +45,14 @@
 .app-stage-3{background:linear-gradient(180deg,#ffeff8,#fff9f2)}
 .app-stage-3 nav button.active,.app-stage-3 .primary{background:#e98dab;color:white}
 .app-stage-3 .board{background:#fbdce8}
+
+/* Real stage-two seaside cafe artwork and purchase feedback */
+.app-stage-1 .ocean-scene{background:#e5faff;border:3px solid #b9e3eb;border-radius:18px;overflow:hidden;filter:none!important;box-shadow:0 10px 24px #4fa8c244}
+.app-stage-1 .shop-scene .ocean-scene{border-color:#79c6e5}
+.app-stage-1 .goods article{background:linear-gradient(175deg,#ffffff,#f1fbff);border:1px solid #a6dfed;box-shadow:0 4px 12px #5ba9ba18}
+.app-stage-1 .goods .decor-art{width:125px;height:100px;object-fit:contain}
+.app-stage-1 .goods button:not(:disabled){background:#3ea6bd;color:#fff}
+.app-stage-1 .goods .preview-decor{background:#dff4f9!important;color:#32849a!important;border:1px solid #99d8e6}
+.app-stage-1 .installed-label span{background:#e6faff;border-color:#83cfdc;color:#257d8c}
+.app-stage-1 .ocean-scene .scene-pop{transform-origin:center;animation:oceanDecorIn .65s cubic-bezier(.19,1.5,.3,1) both}
+@keyframes oceanDecorIn{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:scale(1)}}

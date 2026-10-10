@@ -56,3 +56,17 @@
 .app-stage-1 .installed-label span{background:#e6faff;border-color:#83cfdc;color:#257d8c}
 .app-stage-1 .ocean-scene .scene-pop{transform-origin:center;animation:oceanDecorIn .65s cubic-bezier(.19,1.5,.3,1) both}
 @keyframes oceanDecorIn{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:scale(1)}}
+
+/* Drag and drop cafe decorations without forced overlapping */
+.cafe-editor{position:relative;width:100%;isolation:isolate;border-radius:17px;overflow:hidden;background:#e6f7f4;user-select:none;-webkit-user-select:none}
+.cafe-editor>.cafe-scene{display:block;width:100%;height:auto;margin:0;pointer-events:none}
+.cafe-editor .moveable-decor{position:absolute;display:block;width:clamp(45px,17%,84px);height:clamp(45px,17%,84px);object-fit:contain;transform:translate(-50%,-50%);filter:drop-shadow(0 4px 5px #705b5b66);z-index:6;user-select:none;-webkit-user-drag:none;touch-action:none;cursor:grab;transition:filter .2s;pointer-events:none}
+.cafe-editor.editing .moveable-decor{pointer-events:auto;cursor:grab}
+.cafe-editor.editing .moveable-decor:active{cursor:grabbing;z-index:15;filter:drop-shadow(0 7px 9px #3c698a99) scale(1.08)}
+.cafe-editor .moveable-decor.preview-ghost{opacity:.7;filter:drop-shadow(0 0 8px #65d5f3);outline:2px dashed #61bccb;border-radius:12px;background:#ffffff44}
+.cafe-editor .moveable-decor.preview-ghost{pointer-events:none}
+.shop-scene .cafe-editor{border:2px solid #91d2e1;box-shadow:0 7px 15px #6f9db22b}
+.hero .cafe-editor{margin:0 auto 10px;box-shadow:0 7px 16px #b7867430}
+.app-stage-1 .cafe-editor{background:#e5f9fc}
+.app-stage-1 .shop-scene .cafe-editor{border-color:#60bfd0}
+@media(max-width:370px){.cafe-editor .moveable-decor{width:18%;height:auto;aspect-ratio:1}}

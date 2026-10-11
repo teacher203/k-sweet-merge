@@ -21,8 +21,8 @@ const MENU=[
 {id:'cake',name:'동백 케이크',emoji:'🎂',image:'/art/food-camellia.svg',type:'디저트',pay:200,need:5},
 {id:'cookie',name:'르뱅 쿠키',emoji:'🍪',type:'디저트',pay:125,need:3},
 {id:'financier',name:'휘낭시에',emoji:'🧈',type:'디저트',pay:140,need:4},
-{id:'madeleine',name:'마들렌',emoji:'🧁',type:'디저트',pay:135,need:4},
-{id:'scone',name:'버터 스콘',emoji:'🥐',type:'디저트',pay:115,need:3},
+{id:'madeleine',name:'마들렌',emoji:'🐚',image:'/art/food-madeleine.svg',type:'디저트',pay:135,need:4},
+{id:'scone',name:'버터 스콘',emoji:'🍞',image:'/art/food-scone.svg',type:'디저트',pay:115,need:3},
 {id:'croissant',name:'크루아상',emoji:'🥐',type:'디저트',pay:170,need:5}
 ];
 const FURNI=[

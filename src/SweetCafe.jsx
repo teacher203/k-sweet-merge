@@ -3,7 +3,7 @@ import{createRoot}from'react-dom/client';
 import './sweetcafe.css';
 import OrderGame from './OrderGame.jsx';
 import RecipeClass from './RecipeClass.jsx';
-import {playSound,setSoundEnabled} from './sound.js';
+import {playSound,setSoundEnabled,startMusic,stopMusic} from './sound.js';
 
 const CREW=[
 {id:'mocha',name:'모카',job:'고양이 바리스타',type:'음료',color:'#ffd7a6',asset:'/mascots/cute-mocha.svg',emoji:'🐱',power:'음료 제조',base:120},
@@ -67,6 +67,7 @@ function App(){
  const [edit,setEdit]=useState(false);
  const [decorHint,setDecorHint]=useState(false);
  const [soundOn,setSoundOn]=useState(true);
+ const [musicOn,setMusicOn]=useState(false);
  const [selectedItem,setSelectedItem]=useState(null);
  const [selectedRecipe,setSelectedRecipe]=useState(null);
  const moved=useRef(null);
@@ -110,6 +111,7 @@ function App(){
  const bonus=Math.round(price(item)*(1+crewSkill('서비스')*.05))+qualityBonus+arcadeBonus;
  setS(v=>({...v,coins:v.coins+bonus,exp:v.exp+20+Math.min(55,Math.floor((info.score||0)/80))+(qualityBonus?15:0),rep:v.rep+1,served:v.served+1,speedWins:(v.speedWins||0)+1,orders:v.orders.filter(q=>q.id!==o.id),best:rush&&rush.seconds>0?Math.max(v.best||0,(rush.score||0)+1):v.best}));
  if(rush&&rush.seconds>0)setRush(v=>v?{...v,score:v.score+1}:v);
+ if(((s.speedWins||0)+1)%5===0)playSound('level');else playSound('win');
  flash('🏆 스테이지 '+arcadeStage+' 클리어! +'+bonus+'코인 · 다음 난도까지 '+Math.max(0,nextArcadeAt-(s.speedWins||0)-1)+'회');
 }
  function leaveOrder(){setActiveOrder(null);flash('다음 손님 주문에 도전해 보세요!')}
@@ -120,7 +122,7 @@ function App(){
  setTab('service');
  flash('⚡ 45초 주문 러시! 난이도가 올라가는 스피드 배틀에 도전!');
 }
- function buyDecor(id){const item=FURNI.find(x=>x.id===id);if(!item||!spend(item.cost))return flash('코인이 부족해요!');const bounds=DECOR_BOUNDS[item.zone];setS(v=>({...v,coins:v.coins-item.cost,inventory:[...v.inventory,{uid:v.serial,id,x:Math.max(bounds.x[0],Math.min(bounds.x[1],bounds.initial[0]+(v.serial%3)*7)),y:bounds.initial[1]}],serial:v.serial+1,decorCount:v.decorCount+1}));setEdit(true);setDecorHint(true);setTab('cafe');flash('🎨 '+item.name+'을 '+item.zone+' 구역에 배치했어요!')}
+ function buyDecor(id){playSound('buy');const item=FURNI.find(x=>x.id===id);if(!item||!spend(item.cost))return flash('코인이 부족해요!');const bounds=DECOR_BOUNDS[item.zone];setS(v=>({...v,coins:v.coins-item.cost,inventory:[...v.inventory,{uid:v.serial,id,x:Math.max(bounds.x[0],Math.min(bounds.x[1],bounds.initial[0]+(v.serial%3)*7)),y:bounds.initial[1]}],serial:v.serial+1,decorCount:v.decorCount+1}));setEdit(true);setDecorHint(true);setTab('cafe');flash('🎨 '+item.name+'을 '+item.zone+' 구역에 배치했어요!')}
  function gacha(kind){const cost=kind==='staff'?5:3;if(s.gems<cost)return flash('보석이 부족해요. 오늘의 미션을 확인해 보세요!');if(kind==='staff'){const missing=CREW.filter(c=>!s.crew.some(w=>w.id===c.id));const chosen=missing[Math.floor(Math.random()*missing.length)];if(!chosen){setS(v=>({...v,gems:v.gems-cost,coins:v.coins+500,gachaCount:v.gachaCount+1}));setChosenDraw('중복 보상 +500코인');return}setS(v=>({...v,gems:v.gems-cost,crew:[...v.crew,{id:chosen.id,lv:1,station:null}],gachaCount:v.gachaCount+1}));setChosenDraw('🎉 '+chosen.name+' 획득!');}else{const item=FURNI[Math.floor(Math.random()*FURNI.length)];setS(v=>({...v,gems:v.gems-cost,inventory:[...v.inventory,{uid:v.serial,id:item.id,x:DECOR_BOUNDS[item.zone].initial[0],y:DECOR_BOUNDS[item.zone].initial[1]}],serial:v.serial+1,gachaCount:v.gachaCount+1,decorCount:v.decorCount+1}));setChosenDraw('🎁 '+item.name+' 획득!');setDecorHint(true)}}
  function combineRecipe(){const cost=90;if(!spend(cost))return flash('90코인이 필요합니다');if(s.recipes.length>=MENU.length)return flash('모든 레시피를 완성했어요!');setS(v=>{const recipeParts=v.recipeParts+1;if(recipeParts<3)return {...v,coins:v.coins-cost,recipeParts};const next=MENU.find(m=>!v.recipes.includes(m.id));return {...v,coins:v.coins-cost,recipeParts:0,recipes:[...v.recipes,next.id]}});flash(s.recipeParts>=2?'🎉 새로운 레시피 개발 성공!':'레시피 조각 +1 🍰')}
  function claimOffline(){setS(v=>({...v,coins:v.coins+v.offlineGift,offlineGift:0}));flash('자리 비운 사이의 수익을 받았어요!')}
@@ -129,13 +131,15 @@ function App(){
  function stopDrag(){moved.current=null}
  function claimMission(id){if(s.claim[id])return;const ok=id==='serve'?s.served>=5:id==='staff'?s.crew.length>=3:id==='decor'?s.inventory.length>=4:false;if(!ok)return;setS(v=>({...v,gems:v.gems+2,claim:{...v.claim,[id]:true}}));flash('보석 +2 획득! 💎')}
  function learnRecipe(id){const m=MENU.find(x=>x.id===id);if(!m)return;setS(v=>v.recipes.includes(id)?v:{...v,recipes:[...v.recipes,id],exp:v.exp+25,coins:v.coins+50});flash('📖 '+m.name+' 레시피 학습 완료! +50코인 +25경험치')}
+ function toggleMusic(){if(musicOn){stopMusic();setMusicOn(false)}else{setSoundEnabled(true);setSoundOn(true);setMusicOn(startMusic())}}
  const nav=[['cafe','🏠','카페'],['staff','👩‍🍳','직원'],['recipe','📖','배우기'],['interior','🛋️','꾸미기'],['draw','🎁','뽑기'],['league','🏆','리그']];
  return <div className="sweet-app" onClickCapture={()=>{if(soundOn)playSound('click')}}>
- {tab!=='cafe'&&<header className="sweet-top"><div className="sweet-logo"><span>🍓 달콤한 동물 친구들의 카페</span><strong>K-BAKERY <em>CAFE</em></strong></div><div className="sweet-resources"><button className="sound-switch" onClick={()=>{setSoundOn(v=>{setSoundEnabled(!v);return !v})}}>{soundOn?'🔊':'🔇'}</button><span>🪙 {s.coins.toLocaleString()}</span><span>💎 {s.gems}</span><span>⭐ Lv.{lvl}</span></div></header>}
+ {tab!=='cafe'&&<header className="sweet-top"><div className="sweet-logo"><span>🍓 달콤한 동물 친구들의 카페</span><strong>K-BAKERY <em>CAFE</em></strong></div><div className="sweet-resources"><button className="sound-switch" onClick={()=>{setSoundOn(v=>{setSoundEnabled(!v);if(v){stopMusic();setMusicOn(false)}return !v})}}>{soundOn?'🔊':'🔇'}</button><span>🪙 {s.coins.toLocaleString()}</span><span>💎 {s.gems}</span><span>⭐ Lv.{lvl}</span></div></header>}
  {s.offlineGift>0&&<div className="offline-shade"><div className="offline-modal"><div className="gift-icon">🎁</div><h2>다시 오셨네요!</h2><p>직원들이 카페를 돌보고 있었어요.</p><strong>🪙 +{s.offlineGift.toLocaleString()}</strong><button onClick={claimOffline}>보상 받기</button></div></div>}
  <div className={tab==='cafe'?'sweet-scroll concept-scroll':'sweet-scroll'}>
  {tab==='cafe'&&<div className="cafe2-home">
-  <div className="cafe2-top"><div className="cafe2-brand"><span>🍓 LEARN · BAKE · PLAY</span><h1>K-BAKERY <em>CAFE</em></h1></div><div className="cafe2-level">⭐ Lv.{lvl} <button className="sound-switch" onClick={()=>{setSoundOn(v=>{setSoundEnabled(!v);return !v})}} title="효과음 켜고 끄기">{soundOn?'🔊':'🔇'}</button></div></div>
+  <div className="cafe2-top"><div className="cafe2-brand"><span>🍓 LEARN · BAKE · PLAY</span><h1>K-BAKERY <em>CAFE</em></h1></div><div className="cafe2-level">⭐ Lv.{lvl} <button className="sound-switch" onClick={()=>{setSoundOn(v=>{setSoundEnabled(!v);if(v){stopMusic();setMusicOn(false)}return !v})}} title="효과음 켜고 끄기">{soundOn?'🔊':'🔇'}</button></div></div>
+  <div className="audio-control-strip"><button onClick={toggleMusic} aria-pressed={musicOn}>{musicOn?'🎵 배경음 끄기':'🎵 배경음 켜기'}</button><span>효과음 {soundOn?'켜짐 🔊':'꺼짐 🔇'}</span></div>
   <div className="cafe2-wallet"><span>🪙 <b>{s.coins.toLocaleString()}</b></span><span>💎 <b>{s.gems}</b></span><span>💗 <b>{s.crew.length}명</b></span></div>
   <div className="cafe2-title"><strong>🌷 오늘도 카페 오픈!</strong><span>레시피를 배우며 키우는 나만의 카페</span></div>
   <div className="cafe2-scene"><div className={'cafe2-decoration-stage '+(edit?'is-editing':'')} onPointerMove={dragPiece} onPointerUp={stopDrag} onPointerCancel={stopDrag}>
@@ -150,10 +154,10 @@ function App(){
   <div className="cafe2-stats">☕ 누적 주문 <b>{s.served}건</b><span>·</span> 🪙 자동 수익 <b>+{earned}/분</b></div>
   <div className="cafe2-nav">{[['service','🍰','주문'],['staff','🐱','직원'],['recipe','📖','배우기'],['interior','🛋️','꾸미기'],['draw','🎁','뽑기'],['league','🏆','리그']].map(([id,emoji,label])=><button onClick={()=>setTab(id)} key={id}><span>{emoji}</span><small>{label}</small></button>)}</div>
  </div>}
- {tab==='service'&&<section className="screen"><div className="screen-title"><small>🍓 K-BAKERY KITCHEN</small><h2>🍰 주문 받고 직접 만들기</h2><p>🎯 베이커리 중심 다양한 메뉴 + ⚡ 타이밍 배틀! 6라운드마다 속도가 빨라지고, 스피드 배틀 5회 성공마다 스테이지가 올라갑니다.</p><div className="service-stage-banner"><b>🏆 STAGE {arcadeStage}</b><span>다음 난이도까지 {Math.max(0,nextArcadeAt-s.served)}회 · 스피드 배틀 {(s.speedWins||0)}회 성공</span></div></div>
+ {tab==='service'&&<section className="screen"><div className="screen-title"><small>🍓 K-BAKERY KITCHEN</small><h2>🍰 주문 받고 직접 만들기</h2><p>🎯 베이커리 중심 다양한 메뉴 + ⚡ 타이밍 배틀! 6라운드마다 속도가 빨라지고, 스피드 배틀 5회 성공마다 스테이지가 올라갑니다.</p><div className="service-stage-banner"><b>🏆 STAGE {arcadeStage}</b><span>다음 난이도까지 {Math.max(0,nextArcadeAt-(s.speedWins||0))}회 · 스피드 배틀 {(s.speedWins||0)}회 성공</span></div></div>
  {activeOrder&&MENU.find(m=>m.id===activeOrder.menu)?<OrderGame key={activeOrder.id} menu={MENU.find(m=>m.id===activeOrder.menu)} customer={activeOrder.customer} difficulty={arcadeStage} onSuccess={finishOrder} onExit={leaveOrder}/>:
  <><div className="service-banner art-service-crew">{CREW.map(member=><div key={member.id}><CrewPortrait crew={member} small/><b>{member.name}</b></div>)}</div>
- <section className="orders-panel"><div className="panel-heading"><h3>🧁 오늘의 손님 주문</h3><span>+{earned}🪙/분</span></div><div className="order-list">{s.orders.map(o=>{const m=MENU.find(x=>x.id===o.menu);return <article key={o.id} className="customer-order"><span className="customer-face">{o.customer}</span><div><b><FoodArt item={m} size="mini"/> {m.name}</b><small>남은 시간 {o.wait}초 · 제조 성공 시 +{price(m)}코인</small></div><button onClick={()=>beginOrder(o.id)}>만들기 🎮</button></article>})}</div>{!s.orders.length&&<p className="empty-orders">새 손님이 오는 중이에요 🐰</p>}</section>
+ <section className="orders-panel"><div className="panel-heading"><h3>🧁 오늘의 손님 주문</h3><span>+{earned}🪙/분</span></div><div className="order-list">{s.orders.map(o=>{const m=MENU.find(x=>x.id===o.menu);return <article key={o.id} className="customer-order"><span className="customer-face">{o.customer}</span><div><b className="order-food-name"><FoodArt item={m} size="mini"/> {m.name}</b><small>남은 시간 {o.wait}초 · 제조 성공 시 +{price(m)}코인</small></div><button onClick={()=>beginOrder(o.id)}>만들기 🎮</button></article>})}</div>{!s.orders.length&&<p className="empty-orders">새 손님이 오는 중이에요 🐰</p>}</section>
  {rush&&<div className="rush-bar"><b>{rush.seconds>0?'⏱️ '+rush.seconds+'초':'🏁 챌린지 종료'}</b><span>제조 성공 {rush.score}건</span><button onClick={startRush}>재도전</button></div>}
  <button className="wide-btn" onClick={startRush}>⚡ 45초 스피드 러시 도전</button><button className="concept-back" onClick={()=>setTab('cafe')}>← 카페로 돌아가기</button></>}</section>}
  {tab==='mail'&&<section className="screen"><div className="screen-title"><small>HAPPY MAILBOX</small><h2>💌 달콤한 우편함</h2><p>카페가 쉬는 동안 들어온 수익을 받을 수 있어요.</p></div><div className="mailbox-gift"><span>🎁</span><strong>{s.offlineGift>0?('+'+s.offlineGift.toLocaleString()+'코인'):('오늘의 우편함')}</strong><p>{s.offlineGift>0?'직원들이 열심히 일했어요!':'지금은 받을 보상이 없어요. 잠시 후 다시 들러주세요.'}</p><button onClick={s.offlineGift>0?claimOffline:()=>setTab('cafe')}>{s.offlineGift>0?'보상 받기':'카페로 돌아가기'}</button></div></section>}

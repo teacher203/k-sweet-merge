@@ -3,9 +3,9 @@ import{createRoot}from'react-dom/client';
 import './sweetcafe.css';
 
 const CREW=[
-{id:'mocha',name:'모카',job:'고양이 바리스타',type:'음료',color:'#ffd7a6',asset:'/mascots/cute-mocha.svg',emoji:'🐱',power:'음료 제조',base:120},
-{id:'berry',name:'딸기',job:'토끼 파티시에',type:'디저트',color:'#ffd3e4',asset:'/mascots/cute-berry.svg',emoji:'🐰',power:'디저트 품질',base:210},
-{id:'bong',name:'봉봉',job:'판다 매니저',type:'서비스',color:'#efdcba',asset:'/mascots/cute-bong.svg',emoji:'🐼',power:'서빙 속도',base:310}
+{id:'mocha',name:'모카',job:'고양이 바리스타',type:'음료',color:'#ffd7a6',asset:'/crew/portrait-mocha.webp',emoji:'🐱',power:'음료 제조',base:120},
+{id:'berry',name:'딸기',job:'토끼 파티시에',type:'디저트',color:'#ffd3e4',asset:'/crew/portrait-berry.webp',emoji:'🐰',power:'디저트 품질',base:210},
+{id:'bong',name:'봉봉',job:'판다 매니저',type:'서비스',color:'#efdcba',asset:'/crew/portrait-bong.webp',emoji:'🐼',power:'서빙 속도',base:310}
 ];
 const MENU=[
 {id:'latte',name:'딸기라떼',emoji:'🍓',type:'음료',pay:38,need:1},
@@ -79,24 +79,17 @@ function App(){
  {tab!=='cafe'&&<header className="sweet-top"><div className="sweet-logo"><span>🍓 달콤한 동물 친구들의 카페</span><strong>K-SWEET <em>CAFE</em></strong></div><div className="sweet-resources"><span>🪙 {s.coins.toLocaleString()}</span><span>💎 {s.gems}</span><span>⭐ Lv.{lvl}</span></div></header>}
  {s.offlineGift>0&&<div className="offline-shade"><div className="offline-modal"><div className="gift-icon">🎁</div><h2>다시 오셨네요!</h2><p>직원들이 카페를 돌보고 있었어요.</p><strong>🪙 +{s.offlineGift.toLocaleString()}</strong><button onClick={claimOffline}>보상 받기</button></div></div>}
  <div className={tab==='cafe'?'sweet-scroll concept-scroll':'sweet-scroll'}>
- {tab==='cafe'&&<div className="concept-home"><div className="concept-art-wrap">
-  <img src="/art/k-sweet-cafe-concept.avif" className="concept-art" alt="고양이 모카가 라떼를 만들고 토끼 딸기가 케이크를 선보이며 판다 봉봉이 인사하는 화려한 K-SWEET CAFE" draggable={false}/>
-  <button className="art-hotspot art-mail" aria-label="우편함 열기" onClick={()=>setTab('mail')}/>
-  <button className="art-hotspot art-mission" aria-label="오늘의 미션 열기" onClick={()=>setTab('missions')}/>
-  <button className="art-hotspot art-daily" aria-label="미션 보상 확인" onClick={()=>setTab('missions')}/>
-  <button className="art-hotspot art-machine" aria-label="음료 만들기와 손님 주문" onClick={()=>setTab('service')}/>
-  <button className="art-hotspot art-display" aria-label="디저트 주문 받기" onClick={()=>setTab('service')}/>
-  <button className="art-hotspot art-panda" aria-label="판다 매니저 직원 관리" onClick={()=>setTab('staff')}/>
-  <button className="art-hotspot art-card1" aria-label="모카 바리스타 직원 관리" onClick={()=>setTab('staff')}/>
-  <button className="art-hotspot art-card2" aria-label="딸기 파티시에 직원 관리" onClick={()=>setTab('staff')}/>
-  <button className="art-hotspot art-card3" aria-label="봉봉 매니저 직원 관리" onClick={()=>setTab('staff')}/>
-  <button className="art-hotspot art-nav-0" aria-label="카페 홈" onClick={()=>setTab('cafe')}/>
-  <button className="art-hotspot art-nav-1" aria-label="직원 관리" onClick={()=>setTab('staff')}/>
-  <button className="art-hotspot art-nav-2" aria-label="레시피 개발" onClick={()=>setTab('recipe')}/>
-  <button className="art-hotspot art-nav-3" aria-label="카페 꾸미기" onClick={()=>setTab('interior')}/>
-  <button className="art-hotspot art-nav-4" aria-label="뽑기" onClick={()=>setTab('draw')}/>
-  <button className="art-hotspot art-nav-5" aria-label="바리스타 리그" onClick={()=>setTab('league')}/>
- </div><div className="concept-under"><div className="concept-live-stats"><span>⭐ Lv.{lvl}</span><span>🪙 {s.coins.toLocaleString()}</span><span>💎 {s.gems}</span></div><strong>🍓 내 카페 오늘의 현황</strong><span>👩‍🍳 직원 {s.crew.length}명 · 🪙 자동 수익 +{earned}/분 · 🍵 주문 {s.served}건</span><div className="concept-fast"><button onClick={()=>setTab('service')}>🍰 주문 서빙하기</button><button onClick={startRush}>⏱️ 60초 챌린지</button></div></div></div>}
+ {tab==='cafe'&&<div className="cafe2-home">
+  <div className="cafe2-top"><div className="cafe2-brand"><span>🍓 SWEET LITTLE DAYS</span><h1>K-SWEET <em>CAFE</em></h1></div><div className="cafe2-level">⭐ Lv.{lvl}</div></div>
+  <div className="cafe2-wallet"><span>🪙 <b>{s.coins.toLocaleString()}</b></span><span>💎 <b>{s.gems}</b></span><span>💗 <b>{s.crew.length}명</b></span></div>
+  <div className="cafe2-title"><span>✿ 달콤한 동물 친구들의 카페 ✿</span><strong>오늘도 카페 오픈!</strong></div>
+  <div className="cafe2-scene" role="img" aria-label="고양이 모카와 토끼 딸기, 판다 봉봉이 있는 화사하고 아름다운 K-디저트 카페"><img src="/art/k-sweet-hero.webp" alt="따뜻한 햇살과 꽃으로 꾸민 K-SWEET CAFE에서 직원들이 일하는 모습" loading="eager" draggable={false}/><div className="cafe2-scene-bottom"><span>🍰 손님과 만드는 달콤한 하루</span><button onClick={()=>setTab('service')}>주문받기 <span>›</span></button></div></div>
+  <div className="cafe2-mission"><div><b>🎀 오늘의 미션</b><small>손님 5명 서빙하기</small></div><div className="cafe2-mission-progress"><span style={{width:(Math.min(5,s.served)/5*100)+'%'}}/></div><strong>{Math.min(s.served,5)}/5</strong><button onClick={()=>setTab('missions')}>확인 ›</button></div>
+  <div className="cafe2-section-title"><h2>🐾 우리 카페 친구들</h2><button onClick={()=>setTab('staff')}>직원 교육 ›</button></div>
+  <div className="cafe2-crew">{CREW.map(member=>{const hired=s.crew.find(w=>w.id===member.id);return <button className="cafe2-crew-card" onClick={()=>setTab('staff')} key={member.id}><img src={member.asset} alt={member.name+' 캐릭터'} loading="eager"/><b>{member.name}</b><small>{member.job.replace('고양이 ','').replace('토끼 ','').replace('판다 ','')}</small><span>{hired?'Lv.'+hired.lv:'채용하기'} <b>›</b></span></button>})}</div>
+  <div className="cafe2-stats">☕ 누적 주문 <b>{s.served}건</b><span>·</span> 🪙 자동 수익 <b>+{earned}/분</b></div>
+  <div className="cafe2-nav">{[['service','🍰','주문'],['staff','🐱','직원'],['recipe','📖','레시피'],['interior','🛋️','꾸미기'],['draw','🎁','뽑기'],['league','🏆','리그']].map(([id,emoji,label])=><button onClick={()=>setTab(id)} key={id}><span>{emoji}</span><small>{label}</small></button>)}</div>
+ </div>}
  {tab==='service'&&<section className="screen"><div className="screen-title"><small>CAFE SERVICE</small><h2>🍰 손님 주문 서빙하기</h2><p>손님의 주문을 완성하고 코인을 모아 카페를 성장시키세요.</p></div><div className="service-banner art-service-crew">{CREW.map(member=><div key={member.id}><CrewPortrait crew={member} small/><b>{member.name}</b></div>)}</div><section className="orders-panel"><div className="panel-heading"><h3>🍮 손님 주문</h3><span>+{earned}🪙/분</span></div><div className="order-list">{s.orders.map(o=>{const m=MENU.find(x=>x.id===o.menu);return <article key={o.id} className="customer-order"><span className="customer-face">{o.customer}</span><div><b>{m.emoji} {m.name}</b><small>남은 시간 {o.wait}초 · +{price(m)}코인</small></div><button onClick={()=>serve(o.id)}>서빙 🍓</button></article>})}</div>{!s.orders.length&&<p className="empty-orders">새 손님이 오는 중이에요 🐰</p>}</section>{rush&&<div className="rush-bar"><b>⏱️ {rush.seconds}초</b><span>서빙 {rush.score}건</span><button onClick={startRush}>재도전</button></div>}<button className="wide-btn" onClick={startRush}>⚡ 60초 주문 러시 시작</button><button className="concept-back" onClick={()=>setTab('cafe')}>← 카페로 돌아가기</button></section>}
  {tab==='mail'&&<section className="screen"><div className="screen-title"><small>HAPPY MAILBOX</small><h2>💌 달콤한 우편함</h2><p>카페가 쉬는 동안 들어온 수익을 받을 수 있어요.</p></div><div className="mailbox-gift"><span>🎁</span><strong>{s.offlineGift>0?('+'+s.offlineGift.toLocaleString()+'코인'):('오늘의 우편함')}</strong><p>{s.offlineGift>0?'직원들이 열심히 일했어요!':'지금은 받을 보상이 없어요. 잠시 후 다시 들러주세요.'}</p><button onClick={s.offlineGift>0?claimOffline:()=>setTab('cafe')}>{s.offlineGift>0?'보상 받기':'카페로 돌아가기'}</button></div></section>}
  {tab==='missions'&&<section className="screen"><div className="screen-title"><small>DAILY MISSIONS</small><h2>📋 오늘의 카페 미션</h2><p>카페를 키우면서 무료 보석을 모아보세요.</p></div><div className="mission-special"><b>🍓 손님 5명 서빙하기</b><span>{Math.min(s.served,5)}/5</span><button disabled={s.served<5||s.claim.serve} onClick={()=>claimMission('serve')}>{s.claim.serve?'받기 완료':'💎 +2 받기'}</button></div><div className="mission-special"><b>🐾 직원 3명 채용하기</b><span>{Math.min(s.crew.length,3)}/3</span><button disabled={s.crew.length<3||s.claim.staff} onClick={()=>claimMission('staff')}>{s.claim.staff?'받기 완료':'💎 +2 받기'}</button></div><button className="concept-back" onClick={()=>setTab('cafe')}>← 카페로 돌아가기</button></section>}

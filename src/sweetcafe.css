@@ -276,3 +276,17 @@
 .cafe2-stage-bar>div{flex:1 0 100%;background:#edc7d6;border-radius:50px;height:8px;overflow:hidden}
 .cafe2-stage-bar>div>i{display:block;background:linear-gradient(90deg,#eb819e,#aa73cc);height:100%;transition:width .3s;border-radius:50px}
 @media(max-width:370px){.cafe2-placed-item{font-size:29px;min-width:32px;min-height:32px}.cafe2-scene-bottom>button{font-size:10px!important}.service-stage-banner{font-size:11px}}
+
+/* Coordinated illustrated bakery decor — shared illustration palette, no emoji stickers */
+.cafe2-placed-item{background:transparent!important;border:0!important;border-radius:0!important;min-height:0!important;min-width:0!important;width:clamp(43px,12vw,70px)!important;height:clamp(43px,12vw,70px)!important;box-shadow:none!important;filter:drop-shadow(0 4px 3px #6d4f4c68);padding:0!important}
+.cafe2-placed-item .bakery-decor-svg{width:100%;height:100%;display:block;overflow:visible}
+.cafe2-placed-item.decor-zone-벽{width:clamp(47px,13vw,76px)!important;height:clamp(47px,13vw,76px)!important}
+.cafe2-placed-item.decor-zone-바닥{width:clamp(55px,15vw,90px)!important;height:clamp(55px,15vw,90px)!important}
+.cafe2-placed-item.can-move{border:1.5px dashed #d787a0!important;border-radius:13px!important;background:#fff1ef27!important;filter:drop-shadow(0 3px 3px #684e4e77)!important}
+.cafe2-placed-item.can-move:active{transform:translate(-50%,-50%) scale(1.11)!important}
+.bakery-shop-illustration{width:100%;min-height:100px;display:flex;justify-content:center;align-items:center;background:radial-gradient(ellipse at 50% 55%,#fff2e3,#ffe6ed);border:1px solid #f2d4d7;border-radius:13px;padding:7px}
+.bakery-shop-illustration .bakery-decor-svg{display:block;width:100%;height:100px;max-width:120px;filter:drop-shadow(0 6px 3px #8d6a6c33)}
+.shop-items article{display:flex;flex-direction:column;align-items:center;gap:7px;background:#fffcf8!important;border:1px solid #f1d7db!important;border-radius:15px;padding:9px!important}
+.shop-items article>b{color:#9c657b;font-size:13px;text-align:center}
+.shop-items article>small{font-size:10px;color:#b38b9a;white-space:normal;text-align:center}
+.shop-items article button{margin-top:auto}

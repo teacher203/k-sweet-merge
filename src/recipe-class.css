@@ -1,0 +1,13 @@
+.recipe-class{background:linear-gradient(160deg,#fff8f6,#fff1e5);border:2px solid #f0d2d9;border-radius:19px;padding:14px;margin:8px 0;color:#87596c}
+.recipe-class-close{background:white;color:#a56e82;border:1px solid #eeced9;border-radius:10px;padding:9px 13px;font-size:12px;font-weight:900}
+.recipe-class-title{text-align:center;padding:12px 3px}.recipe-class-title>div{font-size:62px}.recipe-class-title>span{display:block;font-size:11px;color:#bd8094}.recipe-class-title h3{font-size:23px;margin:6px 0;color:#955772}
+.recipe-class section{background:#fffefd;border:1px solid #f0dfdf;border-radius:14px;padding:13px;margin:10px 0}
+.recipe-class section strong{font-size:14px;color:#ab6c85}.recipe-class section p{font-size:13px;line-height:1.65;margin:8px 0 0}
+.recipe-class ol{padding-left:22px;font-size:13px;line-height:1.8;margin:8px 0 0}.recipe-class li{margin-bottom:6px}
+.recipe-class .recipe-class-tip{background:#fff6d9;border-color:#eedda9}
+.recipe-answers{display:grid;gap:8px;margin-top:12px}.recipe-answers button{background:#fff4f6;border:1px solid #e9cfda;color:#946479;border-radius:11px;padding:11px;font-size:13px;text-align:left;font-weight:800}
+.recipe-answers button.correct{background:#dff6e8;border-color:#7ccba0;color:#418567}.recipe-answers button.incorrect{background:#ffe4e6;border-color:#e69ca3;color:#bf5f6b}
+.recipe-class-result{min-height:20px;font-weight:900;color:#a46b8b}.recipe-disclaimer{display:block;font-size:10px;color:#b09a9b;line-height:1.6;margin:12px 3px}
+.recipe-gallery .recipe-entry{cursor:pointer;transition:transform .15s}.recipe-gallery .recipe-entry:active{transform:scale(.97)}
+.recipe-gallery .recipe-entry button{background:#e98da9;color:white;border-radius:10px;font-size:11px;padding:8px 12px;font-weight:900;border:none;margin-top:3px}
+.recipe-learning-banner{background:#fff3e7;border:1px solid #f1d8c2;border-radius:13px;padding:12px;margin:12px 0;color:#a56f71;line-height:1.5;font-size:12px}

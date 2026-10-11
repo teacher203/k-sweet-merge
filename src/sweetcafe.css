@@ -110,3 +110,28 @@
 
 /* make images crisper on small mobile screens */
 .concept-art{image-rendering:auto}
+
+/* Critical fixes: actual staff SVG images, never use clipped background images */
+.staff-portrait{position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;min-height:174px;padding:6px;background:linear-gradient(160deg,#fff7ef,#ffe1e7)!important;border:2px solid #f1cad8;border-radius:20px}
+.staff-portrait>.crew-portrait{width:100%!important;height:175px!important;min-height:0!important;object-fit:contain!important;display:block;position:relative;filter:drop-shadow(0 6px 6px #9a67753b)}
+.staff-portrait>span:last-child{position:absolute;bottom:8px;right:8px;z-index:2;background:#fff9f4ed;border:1px solid #e9c1cb;border-radius:10px;padding:4px 8px;color:#a35c74}
+.crew-portrait{display:block;object-fit:contain;flex-shrink:0;background:transparent;border:0;box-shadow:none;max-width:100%;max-height:100%}
+.crew-portrait-small{width:52px!important;height:72px!important;object-fit:contain!important;border-radius:0;background:transparent!important;box-shadow:none!important;filter:drop-shadow(0 3px 4px #c9899960)}
+.art-service-crew .crew-portrait-small{width:60px!important;height:76px!important}
+.gacha-staff-preview .crew-portrait-small{width:42px!important;height:57px!important}
+.league-member .crew-portrait-small{width:47px!important;height:53px!important}
+.draw-result>.crew-portrait{width:140px;height:175px;object-fit:contain}
+.concept-live-stats{display:flex;align-items:center;justify-content:space-evenly;gap:8px;padding:8px 0;margin-bottom:8px}
+.concept-live-stats>span{flex:1;white-space:nowrap;font-size:13px;font-weight:900;background:#fffdf2;border:2px solid #f3c8c4;border-radius:18px;padding:10px 5px;color:#966174}
+.concept-under{padding:13px 16px 25px}
+.staff-entry{grid-template-columns:minmax(118px,40%) minmax(0,1fr);align-items:stretch;gap:10px;padding:11px}
+.staff-info{min-width:0}
+.staff-info h3{font-size:20px}
+.staff-info button{min-height:41px;line-height:1.2;white-space:normal}
+.staff-entry .hearts{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;width:100%}
+.staff-entry .hearts span{text-align:center}
+.screen{padding:16px;background:#fffbfa;border:1px solid #f2d6da}
+.sweet-app{background:linear-gradient(#fff6f4,#fff4ed)}
+.sweet-top{position:sticky;background:#fff9f6;border-bottom:1px solid #f1d5d5}
+.sweet-resources span{border:1px solid #eccdc9;box-shadow:none}
+@media(max-width:380px){.staff-entry{grid-template-columns:116px minmax(0,1fr)}.staff-portrait>.crew-portrait{height:145px!important}.staff-portrait{min-height:150px}.staff-info h3{font-size:17px}.concept-live-stats>span{font-size:11px}}

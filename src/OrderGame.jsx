@@ -49,7 +49,7 @@ mochi:{group:'🍥 찹쌀떡 성형',steps:[
 ['pick','찹쌀떡 피에 사용하는 것은?','🍚','준비된 찹쌀떡 피',['유자탄산수','식빵','에스프레소']],
 ['tap','🤲 떡피를 알맞게 펼쳐요','떡피 펼치기',5],
 ['pick','속에 들어갈 앙금은?','🫘','팥앙금',['소금','탄산수','계피가루만']],
-['timing','🍥 떡피를 부드럽게 오므려요','성형 타이밍'],
+['timing','🤲 떡피를 부드럽게 오므려요','성형 타이밍'],
 ['pick','손에 붙지 않도록 쓰는 것은?','🌾','덧가루',['딸기청','생크림','버터시럽']],
 ['timing','✨ 동그랗고 매끈하게 마무리!','마감 타이밍']]},
 cake:{group:'🎂 케이크 장식',steps:[
@@ -57,7 +57,7 @@ cake:{group:'🎂 케이크 장식',steps:[
 ['tap','🎂 케이크에 크림을 골고루 발라요','크림 바르기',6],
 ['pick','케이크 층 사이에 넣을 것은?','☁️','생크림',['탄산수','간장','솔잎']],
 ['timing','🍰 시트를 가지런히 쌓아요','시트 쌓기'],
-['pick','동백 케이크의 장식은?','🌺','식용 앙금꽃',['생화 그대로','플라스틱 꽃','빨대']],
+['pick','동백 케이크의 장식은?','🌹','식용 앙금꽃',['생화 그대로','플라스틱 꽃','빨대']],
 ['timing','✨ 꽃 장식을 정교하게 마무리!','데코 타이밍']]}
 ,
 cookie:{group:'🍪 구움과자 · 쿠키',steps:[
@@ -131,7 +131,7 @@ export default function OrderGame({menu,customer,onSuccess,onExit,difficulty=1})
  <div className="arcade-progress">{Array.from({length:6},(_,i)=><span key={i} className={i<round||result==='win'?'done':i===round?'here':''}/>)}</div>
  {!result?<div className="arcade-play"><div className="arcade-question"><small>ROUND {round+1}/6 · {step[0]==='pick'?'재료 판단':step[0]==='tap'?'스피드 액션':'정밀 타이밍'}</small><h3>{step[1]}</h3><p>{step[0]==='pick'?'정답 재료를 빠르게 골라주세요!':step[0]==='tap'?'버튼을 빠르게 반복해서 목표 횟수를 채워요!':'분홍 구간에 바늘이 올 때 누르세요!'}</p></div>
  <div className="arcade-clock"><div style={{width:time*100+'%'}}/></div>
- {step[0]==='pick'?<div className="arcade-choices">{choices.map((item,i)=><button key={i} disabled={!!feedback} onClick={()=>hit(item[1]===step[3])}><span>{item[0]}</span><b>{item[1]}</b></button>)}</div>:step[0]==='tap'?
+ {step[0]==='pick'?<div className="arcade-choices">{choices.map((item,i)=><button key={i} disabled={!!feedback} onClick={()=>hit(item[1]===step[3])}><span>{item[1]==='식용 앙금꽃'?<img className="arcade-choice-art" src="/art/food-camellia.svg" alt="빨간 동백 앙금꽃"/>:item[1]==='준비된 찹쌀떡 피'||item[1]==='찹쌀떡'?<img className="arcade-choice-art" src="/art/food-mochi.svg" alt="둥근 찹쌀떡"/>:item[0]}</span><b>{item[1]}</b></button>)}</div>:step[0]==='tap'?
  <div className="bakery-tap-game"><div className="bakery-tap-scene"><FoodArt menu={menu}/><span className="bakery-sprinkle">✨</span><span className="bakery-sprinkle">💫</span></div><div className="bakery-tap-progress"><div style={{width:Math.min(100,taps/step[3]*100)+'%'}}/></div><button disabled={!!feedback} onClick={tap}>{step[2]} <b>{taps}/{step[3]}</b></button></div>:
  <div className="arcade-timing"><div className="arcade-track"><div className="arcade-target"/><div className="arcade-needle" style={{left:needle*100+'%'}}/></div><button disabled={!!feedback} onClick={()=>hit(needle>=.39&&needle<=.61)}>⚡ {step[2]} — 지금!</button><small>메뉴에 맞는 제조 타이밍을 잡아주세요.</small></div>}
  <div className={'arcade-feedback '+(feedback?'show':'')} aria-live="polite">{feedback||'🎯 빠르게, 정확하게!'}</div></div>:

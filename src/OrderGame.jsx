@@ -59,7 +59,7 @@ cake:{group:'🎂 케이크 장식',steps:[
 ['pick','동백 케이크의 장식은?','🌺','식용 앙금꽃',['생화 그대로','플라스틱 꽃','빨대']],
 ['timing','✨ 꽃 장식을 정교하게 마무리!','데코 타이밍']]}
 };
-const EMOJI={우유:'🥛',얼음:'🧊',밀가루:'🌾',딸기:'🍓',솔잎:'🍃',생크림:'☁️',탄산수:'💧',강력분:'🌾'};
+const EMOJI={"우유":"🥛","얼음":"🧊","밀가루":"🌾","딸기":"🍓","솔잎":"🌿","생크림":"🍦","탄산수":"🫧","강력분":"🌾","고추장":"🌶️","뜨거운 물":"♨️","계피":"🪵","소금":"🧂","코코아가루":"🍫","옥수수만":"🌽","냅킨":"🧻","초콜릿":"🍫","빨대":"🥤","된장":"🫘","팥앙금":"🫘","버터":"🧈","송편":"🍡","찹쌀떡":"🍥","기름에 튀기기":"🍳","얼리기":"🧊","우유에 담그기":"🥛","스팀 밀크":"☕","생수":"💧","식초":"🍶","아이스티":"🧋","마른쌀":"🍚","양파":"🧅","고추":"🌶️","간장":"🍶","후추":"🧂","찹쌀반죽":"🍚","유자청":"🍋","탄산수만":"🫧","쌀가루":"🍚","유자탄산수":"🥤","식빵":"🍞","에스프레소":"☕","계피가루만":"🪵","버터시럽":"🍯","얼음만":"🧊","유자청만":"🍋","식힌 케이크 시트":"🍰","생화 그대로":"🌺","플라스틱 꽃":"🪷","달콤한 소":"🫘","딸기청":"🍓","유자 조각":"🍊","집청 시럽":"🍯","눈꽃 얼음":"🍧","딸기 소스":"🍓","휘핑크림":"🍦","준비된 찹쌀떡 피":"🍥","덧가루":"🌾","식용 앙금꽃":"🌺"};
 function randomize(a){const v=[...a];for(let i=v.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[v[i],v[j]]=[v[j],v[i]]}return v}
 export default function OrderGame({menu,customer,onSuccess,onExit,difficulty=1}){
  const plan=PLANS[menu.id]||PLANS.latte;
@@ -67,7 +67,7 @@ export default function OrderGame({menu,customer,onSuccess,onExit,difficulty=1})
  const ended=useRef(false),lock=useRef(false),deadline=useRef(0),start=useRef(0),tapCount=useRef(0);
  const level=Math.min(12,Math.max(1,difficulty));
  const step=plan.steps[Math.min(5,round)];
- const choices=useMemo(()=>step[0]==='pick'?randomize([[step[2],step[3]],...step[4].map(v=>[EMOJI[v]||'❔',v])]):[],[menu.id,round]);
+ const choices=useMemo(()=>step[0]==='pick'?randomize([[step[2],step[3]],...step[4].map(v=>[EMOJI[v]||'🍽️',v])]):[],[menu.id,round]);
  const roundMs=Math.max(1950,4900-(level-1)*190-round*140);
  const swingMs=Math.max(650,1700-(level-1)*72-round*50);
  useEffect(()=>{if(result)return;lock.current=false;tapCount.current=0;setTaps(0);start.current=performance.now();deadline.current=start.current+roundMs;setTime(1);setNeedle(0);

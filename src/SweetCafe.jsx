@@ -3,6 +3,7 @@ import{createRoot}from'react-dom/client';
 import './sweetcafe.css';
 import OrderGame from './OrderGame.jsx';
 import RecipeClass from './RecipeClass.jsx';
+import {playSound,setSoundEnabled} from './sound.js';
 
 const CREW=[
 {id:'mocha',name:'모카',job:'고양이 바리스타',type:'음료',color:'#ffd7a6',asset:'/mascots/cute-mocha.svg',emoji:'🐱',power:'음료 제조',base:120},
@@ -16,8 +17,13 @@ const MENU=[
 {id:'yak',name:'약과',emoji:'🍯',type:'디저트',pay:78,need:2},
 {id:'bingsu',name:'딸기빙수',emoji:'🍧',type:'디저트',pay:100,need:3},
 {id:'coffee',name:'크림라떼',emoji:'☕',type:'음료',pay:115,need:3},
-{id:'mochi',name:'찹쌀떡',emoji:'🍥',type:'디저트',pay:145,need:4},
-{id:'cake',name:'동백 케이크',emoji:'🎂',type:'디저트',pay:200,need:5}
+{id:'mochi',name:'찹쌀떡',emoji:'🍡',image:'/art/food-mochi.svg',type:'디저트',pay:145,need:4},
+{id:'cake',name:'동백 케이크',emoji:'🎂',image:'/art/food-camellia.svg',type:'디저트',pay:200,need:5},
+{id:'cookie',name:'르뱅 쿠키',emoji:'🍪',type:'디저트',pay:125,need:3},
+{id:'financier',name:'휘낭시에',emoji:'🧈',type:'디저트',pay:140,need:4},
+{id:'madeleine',name:'마들렌',emoji:'🧁',type:'디저트',pay:135,need:4},
+{id:'scone',name:'버터 스콘',emoji:'🥐',type:'디저트',pay:115,need:3},
+{id:'croissant',name:'크루아상',emoji:'🥐',type:'디저트',pay:170,need:5}
 ];
 const FURNI=[
 {id:'table',name:'레이스 테이블',cost:140,zone:'테이블',type:'테이블'},
@@ -47,6 +53,7 @@ function load(){try{const v=JSON.parse(localStorage.getItem('ksweet-cafe-v2'));i
 // Rotate the full menu across incoming orders. Learning a recipe still awards its own mastery bonus.
 const randomOrder=(state,offset=0)=>{const index=((state.orderCursor||0)+offset)%MENU.length;const item=MENU[index];return {id:Date.now()+Math.floor(Math.random()*1e7)+offset,menu:item.id,wait:95+Math.floor(Math.random()*15),customer:['🐻','🐼','🐥','🐱','🐰','🦊'][index%6]}};
 function CrewPortrait({crew,small=false}){return <span className={'crew-portrait-frame portrait-'+crew.id+(small?' portrait-small':'')}><img className="crew-portrait" src={crew.asset} alt={crew.name+' '+crew.job} loading="eager" draggable={false}/></span>}
+const FoodArt=({item,size='normal'})=>item.image?<img className={'food-art food-art-'+size} src={item.image} alt={item.name} loading="eager"/>:<span className={'food-emoji food-art-'+size}>{item.emoji}</span>;
 const DECOR_BOUNDS={벽:{x:[10,90],y:[17,42],initial:[55,26]},카운터:{x:[14,85],y:[45,67],initial:[60,57]},테이블:{x:[12,88],y:[59,79],initial:[51,72]},바닥:{x:[11,89],y:[73,91],initial:[65,83]}};
 const DecorIcon=({id})=><img className="bakery-decor-svg" src={'/art/decor/'+id+'.svg'} alt="" loading="eager" draggable={false}/>
 function App(){
@@ -59,6 +66,7 @@ function App(){
  const [chosenDraw,setChosenDraw]=useState(null);
  const [edit,setEdit]=useState(false);
  const [decorHint,setDecorHint]=useState(false);
+ const [soundOn,setSoundOn]=useState(true);
  const [selectedItem,setSelectedItem]=useState(null);
  const [selectedRecipe,setSelectedRecipe]=useState(null);
  const moved=useRef(null);
@@ -122,12 +130,12 @@ function App(){
  function claimMission(id){if(s.claim[id])return;const ok=id==='serve'?s.served>=5:id==='staff'?s.crew.length>=3:id==='decor'?s.inventory.length>=4:false;if(!ok)return;setS(v=>({...v,gems:v.gems+2,claim:{...v.claim,[id]:true}}));flash('보석 +2 획득! 💎')}
  function learnRecipe(id){const m=MENU.find(x=>x.id===id);if(!m)return;setS(v=>v.recipes.includes(id)?v:{...v,recipes:[...v.recipes,id],exp:v.exp+25,coins:v.coins+50});flash('📖 '+m.name+' 레시피 학습 완료! +50코인 +25경험치')}
  const nav=[['cafe','🏠','카페'],['staff','👩‍🍳','직원'],['recipe','📖','배우기'],['interior','🛋️','꾸미기'],['draw','🎁','뽑기'],['league','🏆','리그']];
- return <div className="sweet-app">
- {tab!=='cafe'&&<header className="sweet-top"><div className="sweet-logo"><span>🍓 달콤한 동물 친구들의 카페</span><strong>K-BAKERY <em>CAFE</em></strong></div><div className="sweet-resources"><span>🪙 {s.coins.toLocaleString()}</span><span>💎 {s.gems}</span><span>⭐ Lv.{lvl}</span></div></header>}
+ return <div className="sweet-app" onClickCapture={()=>{if(soundOn)playSound('click')}}>
+ {tab!=='cafe'&&<header className="sweet-top"><div className="sweet-logo"><span>🍓 달콤한 동물 친구들의 카페</span><strong>K-BAKERY <em>CAFE</em></strong></div><div className="sweet-resources"><button className="sound-switch" onClick={()=>{setSoundOn(v=>{setSoundEnabled(!v);return !v})}}>{soundOn?'🔊':'🔇'}</button><span>🪙 {s.coins.toLocaleString()}</span><span>💎 {s.gems}</span><span>⭐ Lv.{lvl}</span></div></header>}
  {s.offlineGift>0&&<div className="offline-shade"><div className="offline-modal"><div className="gift-icon">🎁</div><h2>다시 오셨네요!</h2><p>직원들이 카페를 돌보고 있었어요.</p><strong>🪙 +{s.offlineGift.toLocaleString()}</strong><button onClick={claimOffline}>보상 받기</button></div></div>}
  <div className={tab==='cafe'?'sweet-scroll concept-scroll':'sweet-scroll'}>
  {tab==='cafe'&&<div className="cafe2-home">
-  <div className="cafe2-top"><div className="cafe2-brand"><span>🍓 LEARN · BAKE · PLAY</span><h1>K-BAKERY <em>CAFE</em></h1></div><div className="cafe2-level">⭐ Lv.{lvl}</div></div>
+  <div className="cafe2-top"><div className="cafe2-brand"><span>🍓 LEARN · BAKE · PLAY</span><h1>K-BAKERY <em>CAFE</em></h1></div><div className="cafe2-level">⭐ Lv.{lvl} <button className="sound-switch" onClick={()=>{setSoundOn(v=>{setSoundEnabled(!v);return !v})}} title="효과음 켜고 끄기">{soundOn?'🔊':'🔇'}</button></div></div>
   <div className="cafe2-wallet"><span>🪙 <b>{s.coins.toLocaleString()}</b></span><span>💎 <b>{s.gems}</b></span><span>💗 <b>{s.crew.length}명</b></span></div>
   <div className="cafe2-title"><strong>🌷 오늘도 카페 오픈!</strong><span>레시피를 배우며 키우는 나만의 카페</span></div>
   <div className="cafe2-scene"><div className={'cafe2-decoration-stage '+(edit?'is-editing':'')} onPointerMove={dragPiece} onPointerUp={stopDrag} onPointerCancel={stopDrag}>
@@ -142,10 +150,10 @@ function App(){
   <div className="cafe2-stats">☕ 누적 주문 <b>{s.served}건</b><span>·</span> 🪙 자동 수익 <b>+{earned}/분</b></div>
   <div className="cafe2-nav">{[['service','🍰','주문'],['staff','🐱','직원'],['recipe','📖','배우기'],['interior','🛋️','꾸미기'],['draw','🎁','뽑기'],['league','🏆','리그']].map(([id,emoji,label])=><button onClick={()=>setTab(id)} key={id}><span>{emoji}</span><small>{label}</small></button>)}</div>
  </div>}
- {tab==='service'&&<section className="screen"><div className="screen-title"><small>🍓 K-BAKERY KITCHEN</small><h2>🍰 주문 받고 직접 만들기</h2><p>🎯 랜덤 메뉴 8종 + ⚡ 타이밍 배틀! 6라운드마다 속도가 빨라지고, 스피드 배틀 5회 성공마다 스테이지가 올라갑니다.</p><div className="service-stage-banner"><b>🏆 STAGE {arcadeStage}</b><span>다음 난이도까지 {Math.max(0,nextArcadeAt-s.served)}회 · 스피드 배틀 {(s.speedWins||0)}회 성공</span></div></div>
+ {tab==='service'&&<section className="screen"><div className="screen-title"><small>🍓 K-BAKERY KITCHEN</small><h2>🍰 주문 받고 직접 만들기</h2><p>🎯 베이커리 중심 다양한 메뉴 + ⚡ 타이밍 배틀! 6라운드마다 속도가 빨라지고, 스피드 배틀 5회 성공마다 스테이지가 올라갑니다.</p><div className="service-stage-banner"><b>🏆 STAGE {arcadeStage}</b><span>다음 난이도까지 {Math.max(0,nextArcadeAt-s.served)}회 · 스피드 배틀 {(s.speedWins||0)}회 성공</span></div></div>
  {activeOrder&&MENU.find(m=>m.id===activeOrder.menu)?<OrderGame key={activeOrder.id} menu={MENU.find(m=>m.id===activeOrder.menu)} customer={activeOrder.customer} difficulty={arcadeStage} onSuccess={finishOrder} onExit={leaveOrder}/>:
  <><div className="service-banner art-service-crew">{CREW.map(member=><div key={member.id}><CrewPortrait crew={member} small/><b>{member.name}</b></div>)}</div>
- <section className="orders-panel"><div className="panel-heading"><h3>🧁 오늘의 손님 주문</h3><span>+{earned}🪙/분</span></div><div className="order-list">{s.orders.map(o=>{const m=MENU.find(x=>x.id===o.menu);return <article key={o.id} className="customer-order"><span className="customer-face">{o.customer}</span><div><b>{m.emoji} {m.name}</b><small>남은 시간 {o.wait}초 · 제조 성공 시 +{price(m)}코인</small></div><button onClick={()=>beginOrder(o.id)}>만들기 🎮</button></article>})}</div>{!s.orders.length&&<p className="empty-orders">새 손님이 오는 중이에요 🐰</p>}</section>
+ <section className="orders-panel"><div className="panel-heading"><h3>🧁 오늘의 손님 주문</h3><span>+{earned}🪙/분</span></div><div className="order-list">{s.orders.map(o=>{const m=MENU.find(x=>x.id===o.menu);return <article key={o.id} className="customer-order"><span className="customer-face">{o.customer}</span><div><b><FoodArt item={m} size="mini"/> {m.name}</b><small>남은 시간 {o.wait}초 · 제조 성공 시 +{price(m)}코인</small></div><button onClick={()=>beginOrder(o.id)}>만들기 🎮</button></article>})}</div>{!s.orders.length&&<p className="empty-orders">새 손님이 오는 중이에요 🐰</p>}</section>
  {rush&&<div className="rush-bar"><b>{rush.seconds>0?'⏱️ '+rush.seconds+'초':'🏁 챌린지 종료'}</b><span>제조 성공 {rush.score}건</span><button onClick={startRush}>재도전</button></div>}
  <button className="wide-btn" onClick={startRush}>⚡ 45초 스피드 러시 도전</button><button className="concept-back" onClick={()=>setTab('cafe')}>← 카페로 돌아가기</button></>}</section>}
  {tab==='mail'&&<section className="screen"><div className="screen-title"><small>HAPPY MAILBOX</small><h2>💌 달콤한 우편함</h2><p>카페가 쉬는 동안 들어온 수익을 받을 수 있어요.</p></div><div className="mailbox-gift"><span>🎁</span><strong>{s.offlineGift>0?('+'+s.offlineGift.toLocaleString()+'코인'):('오늘의 우편함')}</strong><p>{s.offlineGift>0?'직원들이 열심히 일했어요!':'지금은 받을 보상이 없어요. 잠시 후 다시 들러주세요.'}</p><button onClick={s.offlineGift>0?claimOffline:()=>setTab('cafe')}>{s.offlineGift>0?'보상 받기':'카페로 돌아가기'}</button></div></section>}
@@ -153,7 +161,7 @@ function App(){
  {tab==='staff'&&<section className="screen"><div className="screen-title"><small>CASTING & TRAINING</small><h2>💗 직원 관리</h2><p>일하는 위치를 정하고 교육해서 카페 효율을 높여요.</p></div><div className="staff-cards">{CREW.map(c=>{const w=s.crew.find(x=>x.id===c.id),cost=90+(w?.lv||0)*90;return <article className="staff-entry" key={c.id}><div className="staff-portrait" style={{background:c.color}}><CrewPortrait crew={c}/><span>{w?'Lv.'+w.lv:'NEW'}</span></div><div className="staff-info"><h3>{c.emoji} {c.name}<small>{c.job}</small></h3><p>✨ {c.power}</p>{w?<><div className="staff-select"><label>담당</label><select value={w.station||''} onChange={e=>assign(c.id,e.target.value||null)}><option value="">휴식</option>{TYPES.map(t=><option key={t}>{t}</option>)}</select></div><div className="hearts">{Array.from({length:10},(_,i)=><span key={i} className={i<w.lv?'got':''}>♥</span>)}</div><button onClick={()=>upgrade(c.id)}>📚 교육 🪙{cost}</button></>:<button onClick={()=>hire(c.id)}>💌 채용 🪙{c.base}</button>}</div></article>})}</div></section>}
  {tab==='recipe'&&<section className="screen"><div className="screen-title"><small>K-BAKERY LEARNING LAB</small><h2>📖 나의 베이커리 레시피북</h2><p>레시피를 읽고, 공정을 익히고, 퀴즈를 풀어 새 메뉴를 해금해요!</p></div>{selectedRecipe?
  <RecipeClass key={selectedRecipe} menu={MENU.find(m=>m.id===selectedRecipe)} unlocked={s.recipes.includes(selectedRecipe)} onUnlock={learnRecipe} onClose={()=>setSelectedRecipe(null)}/>:
- <><div className="recipe-learning-banner">🐰 메뉴 8종을 모두 주문 게임에서 연습할 수 있어요! 레시피를 배우고 퀴즈를 맞히면 추가 보상도 받습니다.<br/>📚 학습 완료: <b>{s.recipes.length}/{MENU.length}종</b> · 새 메뉴 퀴즈 정답 시 해금!</div><div className="recipe-gallery">{MENU.map(m=><div className={'recipe-entry '+(s.recipes.includes(m.id)?'known':'unknown')} key={m.id}><span>{m.emoji}</span><b>{m.name}</b><small>{s.recipes.includes(m.id)?'✅ 배운 레시피 · '+m.type:'🔒 배우면 해금 · '+m.type}</small><button onClick={()=>setSelectedRecipe(m.id)}>{s.recipes.includes(m.id)?'📖 복습하기':'🧁 레시피 배우기'}</button></div>)}</div></>}</section>}
+ <><div className="recipe-learning-banner">🐰 빵·구움과자부터 음료까지 모든 메뉴를 주문 게임에서 연습할 수 있어요! 레시피를 배우고 퀴즈를 맞히면 추가 보상도 받습니다.<br/>📚 학습 완료: <b>{s.recipes.length}/{MENU.length}종</b> · 새 메뉴 퀴즈 정답 시 해금!</div><div className="recipe-gallery">{MENU.map(m=><div className={'recipe-entry '+(s.recipes.includes(m.id)?'known':'unknown')} key={m.id}><FoodArt item={m}/><b>{m.name}</b><small>{s.recipes.includes(m.id)?'✅ 배운 레시피 · '+m.type:'🔒 배우면 해금 · '+m.type}</small><button onClick={()=>setSelectedRecipe(m.id)}>{s.recipes.includes(m.id)?'📖 복습하기':'🧁 레시피 배우기'}</button></div>)}</div></>}</section>}
  {tab==='interior'&&<section className="screen"><div className="screen-title"><small>DECORATE YOUR CAFE</small><h2>🛋️ 꾸미기 상점</h2><p>딸기 베이커리 카페 테마의 소품 20종! 벽·카운터·테이블·바닥 구역에 어울리게 배치해 보세요.</p></div><div className="shop-items">{FURNI.map(f=><article key={f.id}><div className="bakery-shop-illustration"><DecorIcon id={f.id}/></div><b>{f.name}</b><small>📍 {f.zone} · 🪙 {f.cost}</small><button onClick={()=>buyDecor(f.id)}>구매 후 카페에 배치</button></article>)}</div><button className="wide-btn" onClick={()=>{setEdit(true);setDecorHint(false);setTab('cafe')}}>🎨 홈 카페 꾸미기 화면으로</button></section>}
  {tab==='draw'&&<section className="screen"><div className="screen-title"><small>HAPPY LUCKY BOX</small><h2>🎁 두근두근 뽑기</h2><p>직원과 인테리어 뽑기는 별도로 운영됩니다. 실제 결제는 없습니다.</p></div><div className="gacha-cards"><article><div className="gacha-staff-preview">{CREW.map(member=><CrewPortrait key={member.id} crew={member} small/>)}</div><h3>직원 뽑기</h3><p>새로운 카페 친구를 영입해 보세요!</p><button onClick={()=>gacha('staff')}>💎 5개 뽑기</button></article><article><span>🎁</span><h3>인테리어 뽑기</h3><p>귀여운 카페 가구가 랜덤 등장!</p><button onClick={()=>gacha('interior')}>💎 3개 뽑기</button></article></div>{chosenDraw&&<div className="draw-result"><div>✨ 🎊 ✨</div>{CREW.filter(m=>chosenDraw.includes(m.name)).map(m=><CrewPortrait key={m.id} crew={m}/>)}<strong>{chosenDraw}</strong><button onClick={()=>setChosenDraw(null)}>확인</button></div>}</section>}
  {tab==='league'&&<section className="screen"><div className="screen-title"><small>BARISTA LEAGUE</small><h2>🏆 바리스타 리그</h2><p>45초 동안 얼마나 많은 스피드 주문을 성공할 수 있을까요?</p></div><div className="league-hero"><div>🏆</div><strong>나의 최고기록 {s.best||0}건</strong><span>{s.best>=9?'💎 다이아':s.best>=6?'🥇 골드':s.best>=3?'🥈 실버':'🥉 브론즈'} 바리스타</span></div><div className="league-standings">{[[0,3],[1,6],[2,9]].map(([n,v])=><div key={n}><span className="league-member"><CrewPortrait crew={CREW[n]} small/><strong>{CREW[n].emoji} {CREW[n].name}</strong></span><b>{v}건</b></div>)}</div><p className="league-note">현재는 가상 라이벌과 겨루는 연습 리그입니다. 실시간 멀티플레이는 아직 아닙니다.</p><button className="wide-btn" onClick={startRush}>⏱️ 45초 리그 도전</button></section>}

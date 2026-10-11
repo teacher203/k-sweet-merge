@@ -256,3 +256,23 @@
 .recipe-entry.unknown{filter:none!important;opacity:1!important;background:#fffbf5}
 .recipe-entry.unknown>span{font-size:40px}
 @media(max-width:360px){.cafe2-brand h1{font-size:18px!important}}
+
+/* ACTUAL interactive decoration on the cafe photo (not inventory-only) */
+.cafe2-decoration-stage{position:relative;width:100%;aspect-ratio:941 / 815;overflow:hidden;isolation:isolate;background:#fff0e8}
+.cafe2-decoration-stage>img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;user-select:none}
+.cafe2-decoration-stage.is-editing{touch-action:none;outline:4px solid #f6bacf;outline-offset:-4px}
+.cafe2-placed-item{position:absolute;z-index:5;transform:translate(-50%,-50%);font-size:clamp(26px,7vw,43px);display:grid;place-items:center;min-width:39px;min-height:39px;background:#fff8e5ed;border:2px solid #eed1c6;border-radius:14px;box-shadow:0 4px 10px #583c415c;touch-action:none;user-select:none}
+.cafe2-placed-item.can-move{cursor:grab;border:2px dashed #e56799;box-shadow:0 0 0 3px #fff6ee,0 6px 14px #94456588;animation:decorBreathe .85s ease-in-out infinite alternate}
+.cafe2-placed-item.can-move:active{cursor:grabbing;z-index:12;transform:translate(-50%,-50%) scale(1.12)}
+@keyframes decorBreathe{to{box-shadow:0 0 0 5px #fff7fc,0 5px 12px #8a557555}}
+.cafe2-edit-label{position:absolute;z-index:20;left:6%;right:6%;bottom:5%;background:#fff8eaf5;border:1px solid #eeb4ca;border-radius:14px;padding:10px 7px;text-align:center;color:#9b597e;font-size:12px;font-weight:900;pointer-events:none;box-shadow:0 3px 10px #ba79995a}
+.cafe2-scene-bottom{gap:6px!important}
+.cafe2-scene-bottom>button{flex:1;min-width:0!important;white-space:normal;word-break:keep-all;text-align:center;padding:11px 3px!important;font-size:11px!important}
+.cafe2-scene-bottom .editing-toggle{background:#fff6eb!important;color:#a45b7a!important;border:1px solid #f1bed1!important}
+.cafe2-scene-bottom .editing-toggle.active{background:#df92b3!important;color:#fff!important}
+.cafe2-stage-bar,.service-stage-banner{background:linear-gradient(135deg,#fff6d9,#ffdfeb);border:1px solid #f0cbd6;color:#9f5f7a;border-radius:15px;padding:13px;margin:13px 0;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;font-size:12px}
+.cafe2-stage-bar>b,.service-stage-banner b{font-size:15px;color:#a4547d}
+.cafe2-stage-bar>span,.service-stage-banner>span{font-size:11px}
+.cafe2-stage-bar>div{flex:1 0 100%;background:#edc7d6;border-radius:50px;height:8px;overflow:hidden}
+.cafe2-stage-bar>div>i{display:block;background:linear-gradient(90deg,#eb819e,#aa73cc);height:100%;transition:width .3s;border-radius:50px}
+@media(max-width:370px){.cafe2-placed-item{font-size:29px;min-width:32px;min-height:32px}.cafe2-scene-bottom>button{font-size:10px!important}.service-stage-banner{font-size:11px}}

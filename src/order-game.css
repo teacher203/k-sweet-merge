@@ -1,0 +1,42 @@
+/* Swipe-to-cook game: standalone tactile kitchen challenge */
+.order-minigame{position:relative;max-width:480px;margin:0 auto 18px;background:linear-gradient(165deg,#fff4f6,#fff6e5);border:2px solid #efd2d5;border-radius:22px;padding:15px 13px 19px;box-shadow:0 7px 22px #bd879d27;overflow:hidden}
+.om-top{display:flex;align-items:center;justify-content:space-between;gap:8px;color:#d27e9c;font-size:11px;font-weight:900;letter-spacing:.7px}
+.om-close{background:#fff;border:1px solid #eed4d9;border-radius:14px;padding:9px 12px;color:#a16583;font-size:12px;font-weight:900}
+.om-order{display:flex;gap:11px;align-items:center;margin:16px 0 12px;background:#fffaf9;border:1px solid #f2dce0;border-radius:18px;padding:12px}
+.om-customer{font-size:45px}
+.om-order small{font-size:11px;color:#c395a5}
+.om-order h3{margin:3px 0;font-size:19px;color:#965d71}
+.om-order p{font-size:11px;color:#af8892;margin:0}
+.om-timer{display:flex;align-items:center;justify-content:space-between;gap:9px}
+.om-timer strong{font-size:17px;color:#a75c79}
+.om-timer strong.danger{color:#ed5367;animation:omPulse .5s infinite alternate}
+.om-timer span{font-size:12px;color:#ad8090}
+.om-time-track{height:10px;background:#f5d9d6;border-radius:99px;overflow:hidden;margin-top:8px}
+.om-time-track>div{height:100%;border-radius:99px;background:linear-gradient(90deg,#f4ac89,#e576ad);transition:width .4s linear}
+.om-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:14px 0}
+.om-steps>div{min-width:0;display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 4px;background:#fffaf7;border:1px solid #ecd6d7;border-radius:14px;color:#ac9a9d}
+.om-steps>div.current{background:#ffe1ed;border:2px solid #e99ab5;color:#9b5979}
+.om-steps>div.done{background:#e8f7e8;color:#65a07b;border:1px solid #bae6c0}
+.om-steps b{display:grid;place-items:center;width:24px;height:24px;border-radius:99px;background:#f5dce3;color:#ad7286}
+.om-steps .done b{background:#97ddb0;color:white}
+.om-steps small{text-align:center;font-size:10px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.om-kitchen{background:#fffefd;border:2px solid #f3d7db;border-radius:18px;padding:13px 10px;min-height:325px}
+.om-drop{height:166px;border:3px dashed #efa7bd;border-radius:19px;background:radial-gradient(circle at 50% 20%,#fff,#ffedee);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px;color:#a3667b;touch-action:none}
+.om-bowl{font-size:73px;line-height:1.05;filter:drop-shadow(0 7px 3px #ca9baf45)}
+.om-drop strong{font-size:15px}
+.om-drop small{font-size:10px;color:#bc91a0}
+.om-notice{margin:10px 0;text-align:center;font-size:12px;color:#a46a7e;font-weight:800;min-height:18px}
+.om-tray{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;touch-action:none}
+.om-chip{min-height:106px;min-width:0;border:2px solid #f1ced6;border-radius:14px;background:linear-gradient(#fffdf9,#ffeef4);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;color:#9c627b;padding:6px 2px;box-shadow:0 4px 0 #edc9d4}
+.om-chip:active{cursor:grabbing;transform:scale(.97);background:#ffe4eb}
+.om-chip>span{font-size:30px;pointer-events:none}
+.om-chip>b{font-size:11px;word-break:keep-all;pointer-events:none}
+.om-chip>small{font-size:9px;color:#c394a4;pointer-events:none}
+.om-ghost{position:fixed;transform:translate(-50%,-65%);pointer-events:none;font-size:52px;z-index:100;filter:drop-shadow(0 8px 7px #ba739d66)}
+.om-success{min-height:108px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:#a25e7b;font-size:18px;font-weight:900}
+.om-success b{font-size:12px}
+.om-success button{background:#e886a5;color:#fff;padding:11px 18px;border-radius:12px;font-weight:900}
+.om-success.fail{color:#a78a87}
+.om-guide{text-align:center;font-size:10px;line-height:1.6;color:#b58f99;margin:11px 0 0}
+@keyframes omPulse{to{transform:scale(1.07);opacity:.75}}
+@media(max-width:380px){.order-minigame{padding:12px 9px}.om-chip{min-height:94px}.om-chip>span{font-size:26px}.om-chip>b{font-size:10px}.om-tray{gap:4px}}

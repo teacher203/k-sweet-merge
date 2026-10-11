@@ -51,7 +51,7 @@ export default function OrderGame({menu,customer,onSuccess,onExit,difficulty=1})
  function miss(reason){
   if(lock.current||ended.current)return;lock.current=true;
   const newLives=lives-1;setLives(newLives);setCombo(0);setFeedback('💥 '+reason);
-  if(newLives<=0){ended.current=true;setResult('lose');setNotice('손님이 떠났어요. 다음 판에서 만회해요!')}
+  if(newLives<=0||round+1>=ROUNDS){ended.current=true;setResult('lose');setNotice('손님이 떠났어요. 다음 판에서 만회해요!')}
   else setTimeout(()=>{setFeedback('');next()},410);
  }
  function hit(ok){

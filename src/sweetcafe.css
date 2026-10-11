@@ -107,3 +107,6 @@
 .league-member strong{font-size:12px;color:#966180}
 .draw-result>.crew-art{width:125px;height:148px;min-height:148px}
 @media(max-width:380px){.staff-portrait>.crew-art{min-height:150px}.crew-art-small{width:45px;height:62px;min-height:62px}}
+
+/* make images crisper on small mobile screens */
+.concept-art{image-rendering:auto}

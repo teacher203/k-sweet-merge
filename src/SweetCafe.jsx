@@ -47,7 +47,7 @@ function load(){try{const v=JSON.parse(localStorage.getItem('ksweet-cafe-v2'));i
 const randomOrder=(state)=>{const available=MENU.filter(m=>state.recipes.includes(m.id));const item=available[Math.floor(Math.random()*available.length)]||MENU[0];return {id:Date.now()+Math.floor(Math.random()*1e6),menu:item.id,wait:42+Math.floor(Math.random()*12),customer:['🐻','🐼','🐥','🐱','🐰','🦊'][Math.floor(Math.random()*6)]}};
 function CrewPortrait({crew,small=false}){return <span className={'crew-portrait-frame portrait-'+crew.id+(small?' portrait-small':'')}><img className="crew-portrait" src={crew.asset} alt={crew.name+' '+crew.job} loading="eager" draggable={false}/></span>}
 const DECOR_BOUNDS={벽:{x:[10,90],y:[17,42],initial:[55,26]},카운터:{x:[14,85],y:[45,67],initial:[60,57]},테이블:{x:[12,88],y:[59,79],initial:[51,72]},바닥:{x:[11,89],y:[73,91],initial:[65,83]}};
-const DecorIcon=({id})=><svg className="bakery-decor-svg" viewBox="0 0 100 100" aria-hidden="true"><use href={'/art/decor-sprite.svg#'+id}/></svg>;
+const DecorIcon=({id})=><img className="bakery-decor-svg" src={'/art/decor/'+id+'.svg'} alt="" loading="eager" draggable={false}/>
 function App(){
  const [s,setS]=useState(load);
  const [tab,setTab]=useState('cafe');

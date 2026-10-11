@@ -52,7 +52,7 @@ export default function OrderGame({menu,customer,onSuccess,onExit}){
  }
  function cancel(){active.current=false;dragRef.current=null;setDrag(null)}
  return <section className="order-minigame" role="dialog" aria-modal="true" aria-label={menu.name+' 만들기 게임'}>
-  <div className="om-top"><button onClick={onExit} className="om-close" aria-label="주문 게임 나가기">← 주문으로</button><span>🍓 K-SWEET KITCHEN</span></div>
+  <div className="om-top"><button onClick={onExit} className="om-close" aria-label="주문 게임 나가기">← 주문으로</button><span>🍓 K-BAKERY KITCHEN</span></div>
   <div className="om-order"><div className="om-customer">{customer||'🐰'}</div><div><small>손님이 기다리고 있어요!</small><h3>{menu.emoji} {menu.name}</h3><p>3가지 재료를 순서대로 드래그!</p></div></div>
   <div className="om-timer"><strong className={remaining<=7?'danger':''}>⏱️ {remaining}초</strong><span>실수 {mistakes}회</span></div>
   <div className="om-time-track"><div style={{width:(remaining/TIME_LIMIT*100)+'%'}}/></div>

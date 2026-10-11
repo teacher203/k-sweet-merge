@@ -3,9 +3,9 @@ import{createRoot}from'react-dom/client';
 import './sweetcafe.css';
 
 const CREW=[
-{id:'mocha',name:'모카',job:'고양이 바리스타',type:'음료',color:'#ffd7a6',asset:'/crew/portrait-mocha.webp',emoji:'🐱',power:'음료 제조',base:120},
-{id:'berry',name:'딸기',job:'토끼 파티시에',type:'디저트',color:'#ffd3e4',asset:'/crew/portrait-berry.webp',emoji:'🐰',power:'디저트 품질',base:210},
-{id:'bong',name:'봉봉',job:'판다 매니저',type:'서비스',color:'#efdcba',asset:'/crew/portrait-bong.webp',emoji:'🐼',power:'서빙 속도',base:310}
+{id:'mocha',name:'모카',job:'고양이 바리스타',type:'음료',color:'#ffd7a6',asset:'/mascots/cute-mocha.svg',emoji:'🐱',power:'음료 제조',base:120},
+{id:'berry',name:'딸기',job:'토끼 파티시에',type:'디저트',color:'#ffd3e4',asset:'/mascots/cute-berry.svg',emoji:'🐰',power:'디저트 품질',base:210},
+{id:'bong',name:'봉봉',job:'판다 매니저',type:'서비스',color:'#efdcba',asset:'/mascots/cute-bong.svg',emoji:'🐼',power:'서빙 속도',base:310}
 ];
 const MENU=[
 {id:'latte',name:'딸기라떼',emoji:'🍓',type:'음료',pay:38,need:1},
@@ -31,7 +31,7 @@ const TYPES=['음료','디저트','서비스'];
 const init=()=>({coins:500,gems:10,day:1,exp:0,rep:0,served:0,crew:[{id:'mocha',lv:1,station:'음료'},{id:'berry',lv:1,station:'디저트'}],inventory:[{uid:1,id:'table',x:57,y:77},{uid:2,id:'plant',x:22,y:44}],serial:3,recipes:['latte','song'],recipeParts:0,orders:[],last:Date.now(),offlineGift:0,gachaCount:0,decorCount:0,best:0,claim:{},rushCount:0});
 function load(){try{const v=JSON.parse(localStorage.getItem('ksweet-cafe-v2'));if(v&&Array.isArray(v.crew)){const byId={};for(const w of v.crew){const id=w.id==='mimi'?'berry':w.id==='coco'?'mocha':w.id;if(!CREW.some(c=>c.id===id))continue;if(!byId[id]||w.lv>byId[id].lv)byId[id]={...w,id}}return {...init(),...v,crew:Object.values(byId)}}const legacy=JSON.parse(localStorage.getItem('ksweet-v1'));if(legacy)return {...init(),coins:Math.max(500,legacy.coins||0),exp:legacy.exp||0,served:legacy.served||0}}catch{}return init()}
 const randomOrder=(state)=>{const available=MENU.filter(m=>state.recipes.includes(m.id));const item=available[Math.floor(Math.random()*available.length)]||MENU[0];return {id:Date.now()+Math.floor(Math.random()*1e6),menu:item.id,wait:42+Math.floor(Math.random()*12),customer:['🐻','🐼','🐥','🐱','🐰','🦊'][Math.floor(Math.random()*6)]}};
-function CrewPortrait({crew,small=false}){return <img className={'crew-portrait '+(small?'crew-portrait-small ':'')+'crew-portrait-'+crew.id} src={crew.asset} alt={crew.name+' '+crew.job} loading="eager" draggable={false}/>}
+function CrewPortrait({crew,small=false}){return <span className={'crew-portrait-frame portrait-'+crew.id+(small?' portrait-small':'')}><img className="crew-portrait" src={crew.asset} alt={crew.name+' '+crew.job} loading="eager" draggable={false}/></span>}
 function App(){
  const [s,setS]=useState(load);
  const [tab,setTab]=useState('cafe');
@@ -82,11 +82,11 @@ function App(){
  {tab==='cafe'&&<div className="cafe2-home">
   <div className="cafe2-top"><div className="cafe2-brand"><span>🍓 SWEET LITTLE DAYS</span><h1>K-SWEET <em>CAFE</em></h1></div><div className="cafe2-level">⭐ Lv.{lvl}</div></div>
   <div className="cafe2-wallet"><span>🪙 <b>{s.coins.toLocaleString()}</b></span><span>💎 <b>{s.gems}</b></span><span>💗 <b>{s.crew.length}명</b></span></div>
-  <div className="cafe2-title"><span>✿ 달콤한 동물 친구들의 카페 ✿</span><strong>오늘도 카페 오픈!</strong></div>
-  <div className="cafe2-scene"><img src="/art/k-sweet-hero.webp" alt="따뜻한 햇살과 꽃으로 꾸민 K-SWEET CAFE에서 직원들이 일하는 모습" loading="eager" draggable={false}/><div className="cafe2-scene-bottom"><span>🍰 손님과 만드는 달콤한 하루</span><button onClick={()=>setTab('service')}>주문받기 <span>›</span></button></div></div>
+  <div className="cafe2-title"><strong>🌷 오늘도 카페 오픈!</strong><span>동물 친구들과 함께하는 달콤한 하루</span></div>
+  <div className="cafe2-scene"><img src="/art/k-sweet-hero.webp?v=clean-20261011-3" alt="따뜻한 햇살과 꽃으로 꾸민 K-SWEET CAFE에서 직원들이 일하는 모습" loading="eager" draggable={false}/><div className="cafe2-scene-bottom"><span>🐾 직원들이 기다리고 있어요</span><button onClick={()=>setTab('service')}>주문 서빙하기 <span>›</span></button></div></div>
   <div className="cafe2-mission"><div><b>🎀 오늘의 미션</b><small>손님 5명 서빙하기</small></div><div className="cafe2-mission-progress"><span style={{width:(Math.min(5,s.served)/5*100)+'%'}}/></div><strong>{Math.min(s.served,5)}/5</strong><button onClick={()=>setTab('missions')}>확인 ›</button></div>
   <div className="cafe2-section-title"><h2>🐾 우리 카페 친구들</h2><button onClick={()=>setTab('staff')}>직원 교육 ›</button></div>
-  <div className="cafe2-crew">{CREW.map(member=>{const hired=s.crew.find(w=>w.id===member.id);return <button className="cafe2-crew-card" onClick={()=>setTab('staff')} key={member.id}><img src={member.asset} alt={member.name+' 캐릭터'} loading="eager"/><b>{member.name}</b><small>{member.job.replace('고양이 ','').replace('토끼 ','').replace('판다 ','')}</small><span>{hired?'Lv.'+hired.lv:'채용하기'} <b>›</b></span></button>})}</div>
+  <div className="cafe2-crew">{CREW.map(member=>{const hired=s.crew.find(w=>w.id===member.id);return <button className="cafe2-crew-card" onClick={()=>setTab('staff')} key={member.id}><CrewPortrait crew={member}/><b>{member.name}</b><small>{member.job.replace('고양이 ','').replace('토끼 ','').replace('판다 ','')}</small><span>{hired?'Lv.'+hired.lv:'채용하기'} <b>›</b></span></button>})}</div>
   <div className="cafe2-stats">☕ 누적 주문 <b>{s.served}건</b><span>·</span> 🪙 자동 수익 <b>+{earned}/분</b></div>
   <div className="cafe2-nav">{[['service','🍰','주문'],['staff','🐱','직원'],['recipe','📖','레시피'],['interior','🛋️','꾸미기'],['draw','🎁','뽑기'],['league','🏆','리그']].map(([id,emoji,label])=><button onClick={()=>setTab(id)} key={id}><span>{emoji}</span><small>{label}</small></button>)}</div>
  </div>}

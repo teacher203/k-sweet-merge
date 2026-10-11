@@ -20,20 +20,34 @@ const MENU=[
 {id:'cake',name:'동백 케이크',emoji:'🎂',type:'디저트',pay:200,need:5}
 ];
 const FURNI=[
-{id:'table',name:'딸기 테이블',emoji:'🪑',cost:140,type:'가구'},
-{id:'plant',name:'꽃 화분',emoji:'🌷',cost:110,type:'가구'},
-{id:'lamp',name:'별빛 조명',emoji:'✨',cost:170,type:'가구'},
-{id:'shelf',name:'디저트 진열대',emoji:'🍰',cost:220,type:'가구'},
-{id:'cat',name:'고양이 인형',emoji:'🧸',cost:190,type:'가구'},
-{id:'balloon',name:'하트 풍선',emoji:'🎈',cost:160,type:'가구'},
-{id:'shell',name:'조개 소품',emoji:'🐚',cost:100,type:'가구'},
-{id:'flower',name:'동백 꽃다발',emoji:'💐',cost:120,type:'가구'}
+{id:'table',name:'레이스 테이블',cost:140,zone:'테이블',type:'테이블'},
+{id:'plant',name:'꽃 화분',cost:110,zone:'바닥',type:'바닥'},
+{id:'lamp',name:'파스텔 조명',cost:170,zone:'벽',type:'벽'},
+{id:'shelf',name:'디저트 벽선반',cost:220,zone:'벽',type:'벽'},
+{id:'cat',name:'고양이 장식 인형',cost:190,zone:'테이블',type:'테이블'},
+{id:'balloon',name:'하트 풍선',cost:160,zone:'벽',type:'벽'},
+{id:'shell',name:'조개 장식',cost:100,zone:'테이블',type:'테이블'},
+{id:'flower',name:'동백꽃 화병',cost:120,zone:'테이블',type:'테이블'},
+{id:'ribbon',name:'크림 리본 장식',cost:115,zone:'벽',type:'벽'},
+{id:'menu',name:'우드 메뉴보드',cost:160,zone:'벽',type:'벽'},
+{id:'cake',name:'딸기 케이크',cost:180,zone:'카운터',type:'카운터'},
+{id:'macaron',name:'마카롱 스탠드',cost:150,zone:'카운터',type:'카운터'},
+{id:'cups',name:'파스텔 머그컵',cost:125,zone:'카운터',type:'카운터'},
+{id:'jam',name:'딸기잼 병',cost:95,zone:'카운터',type:'카운터'},
+{id:'rug',name:'딸기우유 러그',cost:220,zone:'바닥',type:'바닥'},
+{id:'box',name:'베이커리 선물상자',cost:145,zone:'카운터',type:'카운터'},
+{id:'cookie',name:'르뱅 쿠키 접시',cost:155,zone:'카운터',type:'카운터'},
+{id:'photo',name:'송도 풍경 액자',cost:185,zone:'벽',type:'벽'},
+{id:'cushion',name:'핑크 쿠션',cost:110,zone:'테이블',type:'테이블'},
+{id:'candle',name:'크림 캔들',cost:135,zone:'테이블',type:'테이블'}
 ];
 const TYPES=['음료','디저트','서비스'];
 const init=()=>({coins:500,gems:10,day:1,exp:0,rep:0,served:0,crew:[{id:'mocha',lv:1,station:'음료'},{id:'berry',lv:1,station:'디저트'}],inventory:[{uid:1,id:'table',x:57,y:77},{uid:2,id:'plant',x:22,y:44}],serial:3,recipes:['latte','song'],recipeParts:0,orders:[],last:Date.now(),offlineGift:0,gachaCount:0,decorCount:0,best:0,claim:{},rushCount:0});
 function load(){try{const v=JSON.parse(localStorage.getItem('ksweet-cafe-v2'));if(v&&Array.isArray(v.crew)){const byId={};for(const w of v.crew){const id=w.id==='mimi'?'berry':w.id==='coco'?'mocha':w.id;if(!CREW.some(c=>c.id===id))continue;if(!byId[id]||w.lv>byId[id].lv)byId[id]={...w,id}}return {...init(),...v,crew:Object.values(byId)}}const legacy=JSON.parse(localStorage.getItem('ksweet-v1'));if(legacy)return {...init(),coins:Math.max(500,legacy.coins||0),exp:legacy.exp||0,served:legacy.served||0}}catch{}return init()}
 const randomOrder=(state)=>{const available=MENU.filter(m=>state.recipes.includes(m.id));const item=available[Math.floor(Math.random()*available.length)]||MENU[0];return {id:Date.now()+Math.floor(Math.random()*1e6),menu:item.id,wait:42+Math.floor(Math.random()*12),customer:['🐻','🐼','🐥','🐱','🐰','🦊'][Math.floor(Math.random()*6)]}};
 function CrewPortrait({crew,small=false}){return <span className={'crew-portrait-frame portrait-'+crew.id+(small?' portrait-small':'')}><img className="crew-portrait" src={crew.asset} alt={crew.name+' '+crew.job} loading="eager" draggable={false}/></span>}
+const DECOR_BOUNDS={벽:{x:[10,90],y:[17,42],initial:[55,26]},카운터:{x:[14,85],y:[45,67],initial:[60,57]},테이블:{x:[12,88],y:[59,79],initial:[51,72]},바닥:{x:[11,89],y:[73,91],initial:[65,83]}};
+const DecorIcon=({id})=><svg className="bakery-decor-svg" viewBox="0 0 100 100" aria-hidden="true"><use href={'/art/decor-sprite.svg#'+id}/></svg>;
 function App(){
  const [s,setS]=useState(load);
  const [tab,setTab]=useState('cafe');
@@ -95,12 +109,12 @@ function App(){
  setTab('service');
  flash('⚡ 45초 주문 러시! 난이도가 올라가는 스피드 배틀에 도전!');
 }
- function buyDecor(id){const item=FURNI.find(x=>x.id===id);if(!item||!spend(item.cost))return flash('코인이 부족해요!');setS(v=>({...v,coins:v.coins-item.cost,inventory:[...v.inventory,{uid:v.serial,id,x:27+(v.serial*13)%48,y:52+(v.serial*7)%30}],serial:v.serial+1,decorCount:v.decorCount+1}));setEdit(true);setTab('cafe');flash('🎨 '+item.name+'이 카페에 등장했어요! 소품을 끌어 위치를 바꾸세요')}
- function gacha(kind){const cost=kind==='staff'?5:3;if(s.gems<cost)return flash('보석이 부족해요. 오늘의 미션을 확인해 보세요!');if(kind==='staff'){const missing=CREW.filter(c=>!s.crew.some(w=>w.id===c.id));const chosen=missing[Math.floor(Math.random()*missing.length)];if(!chosen){setS(v=>({...v,gems:v.gems-cost,coins:v.coins+500,gachaCount:v.gachaCount+1}));setChosenDraw('중복 보상 +500코인');return}setS(v=>({...v,gems:v.gems-cost,crew:[...v.crew,{id:chosen.id,lv:1,station:null}],gachaCount:v.gachaCount+1}));setChosenDraw('🎉 '+chosen.name+' 획득!');}else{const item=FURNI[Math.floor(Math.random()*FURNI.length)];setS(v=>({...v,gems:v.gems-cost,inventory:[...v.inventory,{uid:v.serial,id:item.id,x:38+(v.serial*9)%32,y:55+(v.serial*6)%25}],serial:v.serial+1,gachaCount:v.gachaCount+1,decorCount:v.decorCount+1}));setChosenDraw('🎁 '+item.name+' 획득!')}}
+ function buyDecor(id){const item=FURNI.find(x=>x.id===id);if(!item||!spend(item.cost))return flash('코인이 부족해요!');const bounds=DECOR_BOUNDS[item.zone];setS(v=>({...v,coins:v.coins-item.cost,inventory:[...v.inventory,{uid:v.serial,id,x:Math.max(bounds.x[0],Math.min(bounds.x[1],bounds.initial[0]+(v.serial%3)*7)),y:bounds.initial[1]}],serial:v.serial+1,decorCount:v.decorCount+1}));setEdit(true);setTab('cafe');flash('🎨 '+item.name+'을 '+item.zone+' 구역에 배치했어요!')}
+ function gacha(kind){const cost=kind==='staff'?5:3;if(s.gems<cost)return flash('보석이 부족해요. 오늘의 미션을 확인해 보세요!');if(kind==='staff'){const missing=CREW.filter(c=>!s.crew.some(w=>w.id===c.id));const chosen=missing[Math.floor(Math.random()*missing.length)];if(!chosen){setS(v=>({...v,gems:v.gems-cost,coins:v.coins+500,gachaCount:v.gachaCount+1}));setChosenDraw('중복 보상 +500코인');return}setS(v=>({...v,gems:v.gems-cost,crew:[...v.crew,{id:chosen.id,lv:1,station:null}],gachaCount:v.gachaCount+1}));setChosenDraw('🎉 '+chosen.name+' 획득!');}else{const item=FURNI[Math.floor(Math.random()*FURNI.length)];setS(v=>({...v,gems:v.gems-cost,inventory:[...v.inventory,{uid:v.serial,id:item.id,x:DECOR_BOUNDS[item.zone].initial[0],y:DECOR_BOUNDS[item.zone].initial[1]}],serial:v.serial+1,gachaCount:v.gachaCount+1,decorCount:v.decorCount+1}));setChosenDraw('🎁 '+item.name+' 획득!')}}
  function combineRecipe(){const cost=90;if(!spend(cost))return flash('90코인이 필요합니다');if(s.recipes.length>=MENU.length)return flash('모든 레시피를 완성했어요!');setS(v=>{const recipeParts=v.recipeParts+1;if(recipeParts<3)return {...v,coins:v.coins-cost,recipeParts};const next=MENU.find(m=>!v.recipes.includes(m.id));return {...v,coins:v.coins-cost,recipeParts:0,recipes:[...v.recipes,next.id]}});flash(s.recipeParts>=2?'🎉 새로운 레시피 개발 성공!':'레시피 조각 +1 🍰')}
  function claimOffline(){setS(v=>({...v,coins:v.coins+v.offlineGift,offlineGift:0}));flash('자리 비운 사이의 수익을 받았어요!')}
- function movePiece(e,uid){if(!edit)return;e.preventDefault();e.currentTarget.setPointerCapture(e.pointerId);moved.current=uid}
- function dragPiece(e){if(moved.current==null)return;const rect=e.currentTarget.getBoundingClientRect();const x=Math.max(10,Math.min(90,100*(e.clientX-rect.left)/rect.width));const y=Math.max(15,Math.min(83,100*(e.clientY-rect.top)/rect.height));const uid=moved.current;setS(v=>({...v,inventory:v.inventory.map(q=>q.uid===uid?{...q,x,y}:q)}))}
+ function movePiece(e,uid){if(!edit)return;e.preventDefault();e.stopPropagation();e.currentTarget.setPointerCapture(e.pointerId);moved.current=uid}
+ function dragPiece(e){if(moved.current==null)return;const r=e.currentTarget.getBoundingClientRect(),uid=moved.current;const entry=s.inventory.find(q=>q.uid===uid);const spec=FURNI.find(x=>x.id===entry?.id);const bounds=DECOR_BOUNDS[spec?.zone||'테이블'];const x=Math.max(bounds.x[0],Math.min(bounds.x[1],100*(e.clientX-r.left)/r.width));const y=Math.max(bounds.y[0],Math.min(bounds.y[1],100*(e.clientY-r.top)/r.height));setS(v=>({...v,inventory:v.inventory.map(q=>q.uid===uid?{...q,x,y}:q)}))}
  function stopDrag(){moved.current=null}
  function claimMission(id){if(s.claim[id])return;const ok=id==='serve'?s.served>=5:id==='staff'?s.crew.length>=3:id==='decor'?s.inventory.length>=4:false;if(!ok)return;setS(v=>({...v,gems:v.gems+2,claim:{...v.claim,[id]:true}}));flash('보석 +2 획득! 💎')}
  function learnRecipe(id){const m=MENU.find(x=>x.id===id);if(!m)return;setS(v=>v.recipes.includes(id)?v:{...v,recipes:[...v.recipes,id],exp:v.exp+25,coins:v.coins+50});flash('📖 '+m.name+' 레시피 학습 완료! +50코인 +25경험치')}
@@ -115,8 +129,8 @@ function App(){
   <div className="cafe2-title"><strong>🌷 오늘도 카페 오픈!</strong><span>레시피를 배우며 키우는 나만의 카페</span></div>
   <div className="cafe2-scene"><div className={'cafe2-decoration-stage '+(edit?'is-editing':'')} onPointerMove={dragPiece} onPointerUp={stopDrag} onPointerCancel={stopDrag}>
  <img src="/art/k-sweet-hero.webp?v=clean-20261011-3" alt="직원들이 일하는 따뜻한 베이커리 카페" draggable={false}/>
- {s.inventory.map(f=>{const thing=FURNI.find(k=>k.id===f.id);return thing?<div key={f.uid} className={'cafe2-placed-item '+(edit?'can-move':'')} style={{left:f.x+'%',top:f.y+'%'}} onPointerDown={e=>movePiece(e,f.uid)} title={thing.name} role="img" aria-label={thing.name}>{thing.emoji}</div>:null})}
- {edit&&<div className="cafe2-edit-label">👆 소품을 끌어서 원하는 곳에 놓으세요</div>}
+ {s.inventory.map(f=>{const thing=FURNI.find(k=>k.id===f.id);if(!thing)return null;const b=DECOR_BOUNDS[thing.zone];return <div key={f.uid} className={'cafe2-placed-item decor-zone-'+thing.zone+' '+(edit?'can-move':'')} style={{left:Math.max(b.x[0],Math.min(b.x[1],f.x))+'%',top:Math.max(b.y[0],Math.min(b.y[1],f.y))+'%'}} onPointerDown={e=>movePiece(e,f.uid)} title={thing.name+' · '+thing.zone} role="img" aria-label={thing.name}><DecorIcon id={thing.id}/></div>})}
+ {edit&&<div className="cafe2-edit-label">👆 소품은 벽·카운터·테이블·바닥 영역 안에서 이동해요</div>}
  </div><div className="cafe2-scene-bottom"><button className={edit?'editing-toggle active':'editing-toggle'} onClick={()=>{setEdit(v=>!v);if(edit)flash('✅ 카페 꾸미기 저장 완료')}}>{edit?'✅ 꾸미기 완료':'🎨 카페 꾸미기'}</button><button onClick={()=>setTab('service')}>⚡ 주문 배틀하기 <span>›</span></button></div></div>
   <div className="cafe2-mission"><div><b>🎀 오늘의 미션</b><small>손님 5명 서빙하기</small></div><div className="cafe2-mission-progress"><span style={{width:(Math.min(5,s.served)/5*100)+'%'}}/></div><strong>{Math.min(s.served,5)}/5</strong><button onClick={()=>setTab('missions')}>확인 ›</button></div>
   <div className="cafe2-section-title"><h2>🐾 우리 카페 친구들</h2><button onClick={()=>setTab('staff')}>직원 교육 ›</button></div>
@@ -137,7 +151,7 @@ function App(){
  {tab==='recipe'&&<section className="screen"><div className="screen-title"><small>K-BAKERY LEARNING LAB</small><h2>📖 나의 베이커리 레시피북</h2><p>레시피를 읽고, 공정을 익히고, 퀴즈를 풀어 새 메뉴를 해금해요!</p></div>{selectedRecipe?
  <RecipeClass key={selectedRecipe} menu={MENU.find(m=>m.id===selectedRecipe)} unlocked={s.recipes.includes(selectedRecipe)} onUnlock={learnRecipe} onClose={()=>setSelectedRecipe(null)}/>:
  <><div className="recipe-learning-banner">🐰 파티시에 딸기와 함께 레시피를 배우고, 주문 게임에서 직접 만들어 보세요.<br/>📚 학습 완료: <b>{s.recipes.length}/{MENU.length}종</b> · 새 메뉴 퀴즈 정답 시 해금!</div><div className="recipe-gallery">{MENU.map(m=><div className={'recipe-entry '+(s.recipes.includes(m.id)?'known':'unknown')} key={m.id}><span>{m.emoji}</span><b>{m.name}</b><small>{s.recipes.includes(m.id)?'✅ 배운 레시피 · '+m.type:'🔒 배우면 해금 · '+m.type}</small><button onClick={()=>setSelectedRecipe(m.id)}>{s.recipes.includes(m.id)?'📖 복습하기':'🧁 레시피 배우기'}</button></div>)}</div></>}</section>}
- {tab==='interior'&&<section className="screen"><div className="screen-title"><small>DECORATE YOUR CAFE</small><h2>🛋️ 꾸미기 상점</h2><p>구매한 소품은 홈 카페 그림 위에 나타납니다. 홈에서 ‘🎨 카페 꾸미기’를 누르고 손가락으로 위치를 이동해 보세요.</p></div><div className="shop-items">{FURNI.map(f=><article key={f.id}><span>{f.emoji}</span><b>{f.name}</b><small>🪙 {f.cost}</small><button onClick={()=>buyDecor(f.id)}>구매 후 카페에 배치</button></article>)}</div><button className="wide-btn" onClick={()=>{setEdit(true);setTab('cafe')}}>🎨 홈 카페 꾸미기 화면으로</button></section>}
+ {tab==='interior'&&<section className="screen"><div className="screen-title"><small>DECORATE YOUR CAFE</small><h2>🛋️ 꾸미기 상점</h2><p>딸기 베이커리 카페 테마의 소품 20종! 벽·카운터·테이블·바닥 구역에 어울리게 배치해 보세요.</p></div><div className="shop-items">{FURNI.map(f=><article key={f.id}><div className="bakery-shop-illustration"><DecorIcon id={f.id}/></div><b>{f.name}</b><small>📍 {f.zone} · 🪙 {f.cost}</small><button onClick={()=>buyDecor(f.id)}>구매 후 카페에 배치</button></article>)}</div><button className="wide-btn" onClick={()=>{setEdit(true);setTab('cafe')}}>🎨 홈 카페 꾸미기 화면으로</button></section>}
  {tab==='draw'&&<section className="screen"><div className="screen-title"><small>HAPPY LUCKY BOX</small><h2>🎁 두근두근 뽑기</h2><p>직원과 인테리어 뽑기는 별도로 운영됩니다. 실제 결제는 없습니다.</p></div><div className="gacha-cards"><article><div className="gacha-staff-preview">{CREW.map(member=><CrewPortrait key={member.id} crew={member} small/>)}</div><h3>직원 뽑기</h3><p>새로운 카페 친구를 영입해 보세요!</p><button onClick={()=>gacha('staff')}>💎 5개 뽑기</button></article><article><span>🎁</span><h3>인테리어 뽑기</h3><p>귀여운 카페 가구가 랜덤 등장!</p><button onClick={()=>gacha('interior')}>💎 3개 뽑기</button></article></div>{chosenDraw&&<div className="draw-result"><div>✨ 🎊 ✨</div>{CREW.filter(m=>chosenDraw.includes(m.name)).map(m=><CrewPortrait key={m.id} crew={m}/>)}<strong>{chosenDraw}</strong><button onClick={()=>setChosenDraw(null)}>확인</button></div>}</section>}
  {tab==='league'&&<section className="screen"><div className="screen-title"><small>BARISTA LEAGUE</small><h2>🏆 바리스타 리그</h2><p>45초 동안 얼마나 많은 스피드 주문을 성공할 수 있을까요?</p></div><div className="league-hero"><div>🏆</div><strong>나의 최고기록 {s.best||0}건</strong><span>{s.best>=9?'💎 다이아':s.best>=6?'🥇 골드':s.best>=3?'🥈 실버':'🥉 브론즈'} 바리스타</span></div><div className="league-standings">{[[0,3],[1,6],[2,9]].map(([n,v])=><div key={n}><span className="league-member"><CrewPortrait crew={CREW[n]} small/><strong>{CREW[n].emoji} {CREW[n].name}</strong></span><b>{v}건</b></div>)}</div><p className="league-note">현재는 가상 라이벌과 겨루는 연습 리그입니다. 실시간 멀티플레이는 아직 아닙니다.</p><button className="wide-btn" onClick={startRush}>⏱️ 45초 리그 도전</button></section>}
  <section className="missions" style={{display:tab==='cafe'?'none':undefined}}><h3>🎀 반짝반짝 미션</h3>{[['serve','손님 5명 서빙',s.served>=5],['staff','직원 3명 채용',s.crew.length>=3],['decor','가구 4개 모으기',s.inventory.length>=4]].map(([id,title,complete])=><div key={id}><span>{complete?'✅':'🌸'} {title}</span><button disabled={!complete||s.claim[id]} onClick={()=>claimMission(id)}>{s.claim[id]?'완료':'💎 +2'}</button></div>)}</section>

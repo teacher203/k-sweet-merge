@@ -1,6 +1,9 @@
 let ctx=null;
 let enabled=true;
-export function setSoundEnabled(value){enabled=!!value;if(enabled)playSound('click')}
+let musicTimer=null;
+let musicIndex=0;
+const NOTES=[523.25,659.25,783.99,659.25,587.33,698.46,880,698.46];
+export function setSoundEnabled(value){enabled=!!value;if(!enabled)stopMusic();if(enabled)playSound('click')}
 export function isSoundEnabled(){return enabled}
 export function playSound(type='click'){
  if(!enabled||typeof window==='undefined')return;
@@ -32,3 +35,21 @@ export function playSound(type='click'){
  }
  }catch(e){/* Browser can restrict audio until the first user gesture. */ }
 }
+
+export function startMusic(){
+ if(!enabled||musicTimer!==null)return false;
+ playSound('click');
+ if(!ctx||ctx.state==='suspended')return false;
+ function note(){
+  if(!enabled||!ctx||ctx.state==='suspended')return;
+  try{const at=ctx.currentTime+.01,osc=ctx.createOscillator(),gain=ctx.createGain();
+   osc.type='sine';osc.frequency.value=NOTES[musicIndex++%NOTES.length];
+   gain.gain.setValueAtTime(.0001,at);gain.gain.exponentialRampToValueAtTime(.021,at+.055);
+   gain.gain.exponentialRampToValueAtTime(.0001,at+.33);
+   osc.connect(gain);gain.connect(ctx.destination);osc.start(at);osc.stop(at+.35);
+  }catch(e){}
+ }
+ note();musicTimer=window.setInterval(note,480);return true;
+}
+export function stopMusic(){if(musicTimer!==null){window.clearInterval(musicTimer);musicTimer=null}}
+export function isMusicPlaying(){return musicTimer!==null}

@@ -1,6 +1,7 @@
 import React,{useEffect,useMemo,useRef,useState} from 'react';
 import{createRoot}from'react-dom/client';
 import './sweetcafe.css';
+import OrderGame from './OrderGame.jsx';
 
 const CREW=[
 {id:'mocha',name:'모카',job:'고양이 바리스타',type:'음료',color:'#ffd7a6',asset:'/mascots/cute-mocha.svg',emoji:'🐱',power:'음료 제조',base:120},
@@ -38,6 +39,7 @@ function App(){
  const [msg,setMsg]=useState('귀여운 카페가 문을 열었어요! 🧁');
  const [now,setNow]=useState(Date.now());
  const [rush,setRush]=useState(null);
+ const [activeOrder,setActiveOrder]=useState(null);
  const [chosenDraw,setChosenDraw]=useState(null);
  const [edit,setEdit]=useState(false);
  const [selectedItem,setSelectedItem]=useState(null);
@@ -64,8 +66,30 @@ function App(){
  function hire(id){const spec=CREW.find(x=>x.id===id);if(!spec||s.crew.some(x=>x.id===id))return;if(!spend(spec.base)){flash('코인이 부족해요! 주문을 완료해 보세요.');return}setS(v=>({...v,coins:v.coins-spec.base,crew:[...v.crew,{id,lv:1,station:null}]}));flash(spec.name+' 직원이 카페에 왔어요! 💗')}
  function upgrade(id){const w=s.crew.find(x=>x.id===id);if(!w)return;const cost=90+w.lv*90;if(!spend(cost))return flash('교육 코인이 부족해요');if(w.lv>=10)return flash('최고 레벨입니다');setS(v=>({...v,coins:v.coins-cost,crew:v.crew.map(x=>x.id===id?{...x,lv:x.lv+1}:x)}));flash('직원 교육 성공! 서비스 능력이 올랐어요 ✨')}
  function assign(id,station){setS(v=>({...v,crew:v.crew.map(w=>w.id===id?{...w,station}:w)}));flash('직원 배치가 변경됐어요')}
- function serve(orderId){const o=s.orders.find(q=>q.id===orderId);if(!o)return;const item=MENU.find(m=>m.id===o.menu);if(!item)return;const bonus=Math.round(price(item)*(1+crewSkill('서비스')*.05));setS(v=>({...v,coins:v.coins+bonus,exp:v.exp+14,rep:v.rep+1,served:v.served+1,orders:v.orders.filter(q=>q.id!==orderId)}));if(rush&&rush.seconds>0){setRush(v=>v?{...v,score:v.score+1}:v);setS(v=>({...v,best:Math.max(v.best||0,(rush.score||0)+1)}))}flash('주문 성공! +'+bonus+'코인 🌟')}
- function startRush(){setRush({until:Date.now()+60000,seconds:60,score:0});setTab('cafe');flash('60초 주문 챌린지 시작! ⏱️')}
+ function beginOrder(orderId){
+ const order=s.orders.find(q=>q.id===orderId);
+ if(!order)return flash('손님이 떠났어요! 다음 주문을 기다려주세요.');
+ setActiveOrder({id:order.id,menu:order.menu,customer:order.customer});
+ flash('👆 재료 3가지를 그릇으로 밀어 디저트를 완성해요!');
+}
+ function finishOrder(info){
+ const o=s.orders.find(q=>q.id===activeOrder?.id);
+ if(!o){flash('손님이 기다리다 떠났어요. 다음 주문에 도전하세요.');return}
+ const item=MENU.find(m=>m.id===o.menu);
+ const qualityBonus=info.quality==='perfect'?Math.round(price(item)*.4):0;
+ const bonus=Math.round(price(item)*(1+crewSkill('서비스')*.05))+qualityBonus;
+ setS(v=>({...v,coins:v.coins+bonus,exp:v.exp+14+(qualityBonus?10:0),rep:v.rep+1,served:v.served+1,orders:v.orders.filter(q=>q.id!==o.id),best:rush&&rush.seconds>0?Math.max(v.best||0,(rush.score||0)+1):v.best}));
+ if(rush&&rush.seconds>0)setRush(v=>v?{...v,score:v.score+1}:v);
+ flash('🎉 제조 성공! '+(qualityBonus?'퍼펙트 보너스 포함 ':'')+'+'+bonus+'코인');
+}
+ function leaveOrder(){setActiveOrder(null);flash('다음 손님 주문에 도전해 보세요!')}
+ function startRush(){
+ setRush({until:Date.now()+60000,seconds:60,score:0});
+ setActiveOrder(null);
+ setS(v=>({...v,orders:v.orders.length?v.orders:[randomOrder(v),randomOrder(v)]}));
+ setTab('service');
+ flash('⏱️ 주문 러시 시작! 시간 안에 디저트를 직접 만들어 서빙하세요!');
+}
  function buyDecor(id){const item=FURNI.find(x=>x.id===id);if(!item||!spend(item.cost))return flash('코인이 부족해요!');setS(v=>({...v,coins:v.coins-item.cost,inventory:[...v.inventory,{uid:v.serial,id,x:27+(v.serial*13)%48,y:52+(v.serial*7)%30}],serial:v.serial+1,decorCount:v.decorCount+1}));setEdit(true);flash(item.name+' 구입! 원하는 위치로 끌어주세요')}
  function gacha(kind){const cost=kind==='staff'?5:3;if(s.gems<cost)return flash('보석이 부족해요. 오늘의 미션을 확인해 보세요!');if(kind==='staff'){const missing=CREW.filter(c=>!s.crew.some(w=>w.id===c.id));const chosen=missing[Math.floor(Math.random()*missing.length)];if(!chosen){setS(v=>({...v,gems:v.gems-cost,coins:v.coins+500,gachaCount:v.gachaCount+1}));setChosenDraw('중복 보상 +500코인');return}setS(v=>({...v,gems:v.gems-cost,crew:[...v.crew,{id:chosen.id,lv:1,station:null}],gachaCount:v.gachaCount+1}));setChosenDraw('🎉 '+chosen.name+' 획득!');}else{const item=FURNI[Math.floor(Math.random()*FURNI.length)];setS(v=>({...v,gems:v.gems-cost,inventory:[...v.inventory,{uid:v.serial,id:item.id,x:38+(v.serial*9)%32,y:55+(v.serial*6)%25}],serial:v.serial+1,gachaCount:v.gachaCount+1,decorCount:v.decorCount+1}));setChosenDraw('🎁 '+item.name+' 획득!')}}
  function combineRecipe(){const cost=90;if(!spend(cost))return flash('90코인이 필요합니다');if(s.recipes.length>=MENU.length)return flash('모든 레시피를 완성했어요!');setS(v=>{const recipeParts=v.recipeParts+1;if(recipeParts<3)return {...v,coins:v.coins-cost,recipeParts};const next=MENU.find(m=>!v.recipes.includes(m.id));return {...v,coins:v.coins-cost,recipeParts:0,recipes:[...v.recipes,next.id]}});flash(s.recipeParts>=2?'🎉 새로운 레시피 개발 성공!':'레시피 조각 +1 🍰')}
@@ -90,7 +114,12 @@ function App(){
   <div className="cafe2-stats">☕ 누적 주문 <b>{s.served}건</b><span>·</span> 🪙 자동 수익 <b>+{earned}/분</b></div>
   <div className="cafe2-nav">{[['service','🍰','주문'],['staff','🐱','직원'],['recipe','📖','레시피'],['interior','🛋️','꾸미기'],['draw','🎁','뽑기'],['league','🏆','리그']].map(([id,emoji,label])=><button onClick={()=>setTab(id)} key={id}><span>{emoji}</span><small>{label}</small></button>)}</div>
  </div>}
- {tab==='service'&&<section className="screen"><div className="screen-title"><small>CAFE SERVICE</small><h2>🍰 손님 주문 서빙하기</h2><p>손님의 주문을 완성하고 코인을 모아 카페를 성장시키세요.</p></div><div className="service-banner art-service-crew">{CREW.map(member=><div key={member.id}><CrewPortrait crew={member} small/><b>{member.name}</b></div>)}</div><section className="orders-panel"><div className="panel-heading"><h3>🍮 손님 주문</h3><span>+{earned}🪙/분</span></div><div className="order-list">{s.orders.map(o=>{const m=MENU.find(x=>x.id===o.menu);return <article key={o.id} className="customer-order"><span className="customer-face">{o.customer}</span><div><b>{m.emoji} {m.name}</b><small>남은 시간 {o.wait}초 · +{price(m)}코인</small></div><button onClick={()=>serve(o.id)}>서빙 🍓</button></article>})}</div>{!s.orders.length&&<p className="empty-orders">새 손님이 오는 중이에요 🐰</p>}</section>{rush&&<div className="rush-bar"><b>⏱️ {rush.seconds}초</b><span>서빙 {rush.score}건</span><button onClick={startRush}>재도전</button></div>}<button className="wide-btn" onClick={startRush}>⚡ 60초 주문 러시 시작</button><button className="concept-back" onClick={()=>setTab('cafe')}>← 카페로 돌아가기</button></section>}
+ {tab==='service'&&<section className="screen"><div className="screen-title"><small>🍓 K-SWEET KITCHEN</small><h2>🍰 주문 받고 직접 만들기</h2><p>손님 주문을 선택하면 스와이프 요리 게임이 열려요. 제조에 성공해야 보상이 지급됩니다!</p></div>
+ {activeOrder&&MENU.find(m=>m.id===activeOrder.menu)?<OrderGame key={activeOrder.id} menu={MENU.find(m=>m.id===activeOrder.menu)} customer={activeOrder.customer} onSuccess={finishOrder} onExit={leaveOrder}/>:
+ <><div className="service-banner art-service-crew">{CREW.map(member=><div key={member.id}><CrewPortrait crew={member} small/><b>{member.name}</b></div>)}</div>
+ <section className="orders-panel"><div className="panel-heading"><h3>🧁 오늘의 손님 주문</h3><span>+{earned}🪙/분</span></div><div className="order-list">{s.orders.map(o=>{const m=MENU.find(x=>x.id===o.menu);return <article key={o.id} className="customer-order"><span className="customer-face">{o.customer}</span><div><b>{m.emoji} {m.name}</b><small>남은 시간 {o.wait}초 · 제조 성공 시 +{price(m)}코인</small></div><button onClick={()=>beginOrder(o.id)}>만들기 🎮</button></article>})}</div>{!s.orders.length&&<p className="empty-orders">새 손님이 오는 중이에요 🐰</p>}</section>
+ {rush&&<div className="rush-bar"><b>{rush.seconds>0?'⏱️ '+rush.seconds+'초':'🏁 챌린지 종료'}</b><span>제조 성공 {rush.score}건</span><button onClick={startRush}>재도전</button></div>}
+ <button className="wide-btn" onClick={startRush}>⚡ 60초 주문 러시 도전</button><button className="concept-back" onClick={()=>setTab('cafe')}>← 카페로 돌아가기</button></>}</section>}
  {tab==='mail'&&<section className="screen"><div className="screen-title"><small>HAPPY MAILBOX</small><h2>💌 달콤한 우편함</h2><p>카페가 쉬는 동안 들어온 수익을 받을 수 있어요.</p></div><div className="mailbox-gift"><span>🎁</span><strong>{s.offlineGift>0?('+'+s.offlineGift.toLocaleString()+'코인'):('오늘의 우편함')}</strong><p>{s.offlineGift>0?'직원들이 열심히 일했어요!':'지금은 받을 보상이 없어요. 잠시 후 다시 들러주세요.'}</p><button onClick={s.offlineGift>0?claimOffline:()=>setTab('cafe')}>{s.offlineGift>0?'보상 받기':'카페로 돌아가기'}</button></div></section>}
  {tab==='missions'&&<section className="screen"><div className="screen-title"><small>DAILY MISSIONS</small><h2>📋 오늘의 카페 미션</h2><p>카페를 키우면서 무료 보석을 모아보세요.</p></div><div className="mission-special"><b>🍓 손님 5명 서빙하기</b><span>{Math.min(s.served,5)}/5</span><button disabled={s.served<5||s.claim.serve} onClick={()=>claimMission('serve')}>{s.claim.serve?'받기 완료':'💎 +2 받기'}</button></div><div className="mission-special"><b>🐾 직원 3명 채용하기</b><span>{Math.min(s.crew.length,3)}/3</span><button disabled={s.crew.length<3||s.claim.staff} onClick={()=>claimMission('staff')}>{s.claim.staff?'받기 완료':'💎 +2 받기'}</button></div><button className="concept-back" onClick={()=>setTab('cafe')}>← 카페로 돌아가기</button></section>}
  {tab==='staff'&&<section className="screen"><div className="screen-title"><small>CASTING & TRAINING</small><h2>💗 직원 관리</h2><p>일하는 위치를 정하고 교육해서 카페 효율을 높여요.</p></div><div className="staff-cards">{CREW.map(c=>{const w=s.crew.find(x=>x.id===c.id),cost=90+(w?.lv||0)*90;return <article className="staff-entry" key={c.id}><div className="staff-portrait" style={{background:c.color}}><CrewPortrait crew={c}/><span>{w?'Lv.'+w.lv:'NEW'}</span></div><div className="staff-info"><h3>{c.emoji} {c.name}<small>{c.job}</small></h3><p>✨ {c.power}</p>{w?<><div className="staff-select"><label>담당</label><select value={w.station||''} onChange={e=>assign(c.id,e.target.value||null)}><option value="">휴식</option>{TYPES.map(t=><option key={t}>{t}</option>)}</select></div><div className="hearts">{Array.from({length:10},(_,i)=><span key={i} className={i<w.lv?'got':''}>♥</span>)}</div><button onClick={()=>upgrade(c.id)}>📚 교육 🪙{cost}</button></>:<button onClick={()=>hire(c.id)}>💌 채용 🪙{c.base}</button>}</div></article>})}</div></section>}

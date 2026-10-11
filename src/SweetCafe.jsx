@@ -3,11 +3,9 @@ import{createRoot}from'react-dom/client';
 import './sweetcafe.css';
 
 const CREW=[
-{id:'mocha',name:'모카',job:'바리스타',type:'음료',color:'#ffd7a6',asset:'/mascots/cute-mocha.svg',emoji:'🐱',power:'음료 제조',base:120},
-{id:'berry',name:'딸기',job:'파티시에',type:'디저트',color:'#ffd3e4',asset:'/mascots/cute-berry.svg',emoji:'🐰',power:'디저트 품질',base:210},
-{id:'bong',name:'봉봉',job:'매니저',type:'서비스',color:'#efdcba',asset:'/mascots/cute-bong.svg',emoji:'🐻',power:'서빙 속도',base:310},
-{id:'mimi',name:'미미',job:'스페셜리스트',type:'디저트',color:'#ffc078',asset:'/mascots/cute-berry.svg',emoji:'🐇',power:'디저트 제조',base:430},
-{id:'coco',name:'코코',job:'소믈리에',type:'음료',color:'#9eceaa',asset:'/mascots/cute-mocha.svg',emoji:'🐈',power:'프리미엄 메뉴',base:500}
+{id:'mocha',name:'모카',job:'고양이 바리스타',type:'음료',color:'#ffd7a6',asset:'/mascots/cute-mocha.svg',emoji:'🐱',power:'음료 제조',base:120},
+{id:'berry',name:'딸기',job:'토끼 파티시에',type:'디저트',color:'#ffd3e4',asset:'/mascots/cute-berry.svg',emoji:'🐰',power:'디저트 품질',base:210},
+{id:'bong',name:'봉봉',job:'판다 매니저',type:'서비스',color:'#efdcba',asset:'/mascots/cute-bong.svg',emoji:'🐼',power:'서빙 속도',base:310}
 ];
 const MENU=[
 {id:'latte',name:'딸기라떼',emoji:'🍓',type:'음료',pay:38,need:1},
@@ -31,7 +29,7 @@ const FURNI=[
 ];
 const TYPES=['음료','디저트','서비스'];
 const init=()=>({coins:500,gems:10,day:1,exp:0,rep:0,served:0,crew:[{id:'mocha',lv:1,station:'음료'},{id:'berry',lv:1,station:'디저트'}],inventory:[{uid:1,id:'table',x:57,y:77},{uid:2,id:'plant',x:22,y:44}],serial:3,recipes:['latte','song'],recipeParts:0,orders:[],last:Date.now(),offlineGift:0,gachaCount:0,decorCount:0,best:0,claim:{},rushCount:0});
-function load(){try{const v=JSON.parse(localStorage.getItem('ksweet-cafe-v2'));if(v&&Array.isArray(v.crew))return {...init(),...v};const legacy=JSON.parse(localStorage.getItem('ksweet-v1'));if(legacy)return {...init(),coins:Math.max(500,legacy.coins||0),exp:legacy.exp||0,served:legacy.served||0}}catch{}return init()}
+function load(){try{const v=JSON.parse(localStorage.getItem('ksweet-cafe-v2'));if(v&&Array.isArray(v.crew)){const byId={};for(const w of v.crew){const id=w.id==='mimi'?'berry':w.id==='coco'?'mocha':w.id;if(!CREW.some(c=>c.id===id))continue;if(!byId[id]||w.lv>byId[id].lv)byId[id]={...w,id}}return {...init(),...v,crew:Object.values(byId)}}const legacy=JSON.parse(localStorage.getItem('ksweet-v1'));if(legacy)return {...init(),coins:Math.max(500,legacy.coins||0),exp:legacy.exp||0,served:legacy.served||0}}catch{}return init()}
 const randomOrder=(state)=>{const available=MENU.filter(m=>state.recipes.includes(m.id));const item=available[Math.floor(Math.random()*available.length)]||MENU[0];return {id:Date.now()+Math.floor(Math.random()*1e6),menu:item.id,wait:42+Math.floor(Math.random()*12),customer:['🐻','🐼','🐥','🐱','🐰','🦊'][Math.floor(Math.random()*6)]}};
 function App(){
  const [s,setS]=useState(load);

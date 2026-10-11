@@ -40,3 +40,51 @@
 .om-guide{text-align:center;font-size:10px;line-height:1.6;color:#b58f99;margin:11px 0 0}
 @keyframes omPulse{to{transform:scale(1.07);opacity:.75}}
 @media(max-width:380px){.order-minigame{padding:12px 9px}.om-chip{min-height:94px}.om-chip>span{font-size:26px}.om-chip>b{font-size:10px}.om-tray{gap:4px}}
+
+/* 2026-10-11 FAST ARCADE: new live reaction game */
+.arcade{background:linear-gradient(150deg,#fff8f0,#ffe8f0 54%,#fff4fd);border:2px solid #e9bfcc;border-radius:22px;margin:12px 0 16px;padding:12px;overflow:hidden;color:#815266;box-shadow:0 7px 20px #ae7a9230}
+.arcade-top{display:flex;align-items:center;justify-content:space-between;gap:5px;color:#c66f95;font-size:11px;font-weight:900}
+.arcade-top button{border:1px solid #eac2d0;background:#fff;border-radius:12px;padding:9px 10px;color:#985877;font-size:11px;font-weight:850}
+.arcade-top b{font-size:11px;color:#fff;background:#e67f9d;padding:6px 9px;border-radius:9px;white-space:nowrap}
+.arcade-header{margin:12px 0;display:flex;align-items:center;gap:11px;background:#fffdfae6;border:1px solid #f0d4dc;border-radius:17px;padding:10px}
+.arcade-customer{font-size:48px;animation:arcadeBounce .7s ease-in-out infinite alternate}
+.arcade-header small{font-size:11px;color:#c18b9f}.arcade-header h3{font-size:19px;margin:3px 0;color:#965a76}.arcade-header div>span{font-size:11px;color:#bd94a3}
+.arcade-hud{display:grid;grid-template-columns:1fr 1fr 1.1fr;gap:6px;margin:8px 0}
+.arcade-hud>div{min-width:0;text-align:center;padding:9px 3px;border:1px solid #edcbd7;background:#fff;border-radius:12px}
+.arcade-hud small{font-size:10px;color:#b98c9f;display:block;margin-bottom:4px}
+.arcade-hud strong{font-size:16px;color:#a15a78;font-variant-numeric:tabular-nums;white-space:nowrap}
+.arcade-progress{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;margin:12px 0}
+.arcade-progress span{height:7px;background:#f0d6df;border-radius:20px;transition:background .2s}
+.arcade-progress span.done{background:#8ed8ae}.arcade-progress span.here{background:#e5749d;box-shadow:0 0 0 2px #fce5ed}
+.arcade-play{background:#fffefa;border:1px solid #ebd1d8;border-radius:20px;padding:14px 11px}
+.arcade-question{text-align:center;min-height:111px}
+.arcade-question small{font-size:10px;color:#d07f9c;font-weight:900;letter-spacing:1px}
+.arcade-question h3{font-size:19px;margin:9px 0 4px;line-height:1.35;color:#954b70;word-break:keep-all}
+.arcade-question p{font-size:11px;margin:5px 0;color:#ac8493}
+.arcade-clock{height:10px;background:#ffe8e8;border-radius:30px;overflow:hidden;margin:0 0 16px}
+.arcade-clock>div{height:100%;border-radius:30px;background:linear-gradient(90deg,#ffbf6b,#ed719f);transition:width 35ms linear}
+.arcade-choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.arcade-choices button{background:linear-gradient(145deg,#fff7e9,#ffecf5);border:2px solid #f2c8d8;border-radius:16px;min-height:103px;box-shadow:0 4px 0 #f2cfdb;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px;transition:transform .07s;color:#9d5b78;padding:8px 3px}
+.arcade-choices button:active{transform:translateY(3px) scale(.96);box-shadow:none}
+.arcade-choices button span{font-size:37px;filter:drop-shadow(0 3px 2px #dda9b759)}
+.arcade-choices button b{font-size:14px;word-break:keep-all}
+.arcade-choices button:disabled,.arcade-timing button:disabled{opacity:.65}
+.arcade-feedback{text-align:center;height:35px;display:flex;align-items:center;justify-content:center;font-weight:900;color:#c68c9f;font-size:13px}
+.arcade-feedback.show{animation:arcadePop .19s ease-out;color:#b95c83}
+.arcade-timing{padding:30px 5px 12px;display:flex;flex-direction:column;gap:16px;align-items:center}
+.arcade-track{width:100%;height:46px;border-radius:14px;border:3px solid #f1b8cb;position:relative;overflow:visible;background:repeating-linear-gradient(90deg,#fff8e9 0,#fff8e9 12px,#fff0d7 12px,#fff0d7 24px)}
+.arcade-target{position:absolute;left:39%;width:22%;height:100%;background:#f49ab7b3;border-left:3px solid #e66895;border-right:3px solid #e66895}
+.arcade-needle{position:absolute;top:-11px;bottom:-11px;width:6px;border-radius:8px;background:#883c83;box-shadow:0 0 0 3px #fff;transform:translateX(-50%);transition:left 20ms linear}
+.arcade-timing button{font-weight:950;border-radius:18px;background:linear-gradient(120deg,#ef7fa8,#d55fb4);color:#fff;font-size:17px;min-height:67px;padding:10px 17px;box-shadow:0 5px 0 #b768a1;width:100%}
+.arcade-timing button:active{transform:translateY(4px);box-shadow:none}
+.arcade-timing small{font-size:11px;color:#bd88a2;text-align:center}
+.arcade-result{text-align:center;min-height:330px;display:flex;justify-content:center;align-items:center;flex-direction:column;gap:12px}
+.arcade-result>div{font-size:64px;animation:arcadePop .35s ease}
+.arcade-result h3{font-size:23px;margin:0;color:#b25d82}
+.arcade-result b{font-size:32px;color:#e8799f}
+.arcade-result p{color:#a87d90;font-size:12px;line-height:1.5}
+.arcade-result button{padding:12px 20px;background:#e985a6;color:white;font-weight:900;border-radius:13px}
+.arcade-tip{font-size:10px;text-align:center;line-height:1.5;margin:12px 2px 2px;color:#bb88a0}
+@keyframes arcadePop{0%{transform:scale(.8);opacity:.3}75%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
+@keyframes arcadeBounce{to{transform:translateY(-6px) rotate(5deg)}}
+@media(max-width:355px){.arcade-question h3{font-size:17px}.arcade-choices button{min-height:90px}.arcade-choices button b{font-size:12px}.arcade-hud strong{font-size:14px}}

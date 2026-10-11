@@ -68,8 +68,8 @@ export default function OrderGame({menu,customer,onSuccess,onExit,difficulty=1})
  const level=Math.min(12,Math.max(1,difficulty));
  const step=plan.steps[Math.min(5,round)];
  const choices=useMemo(()=>step[0]==='pick'?randomize([[step[2],step[3]],...step[4].map(v=>[EMOJI[v]||'🍽️',v])]):[],[menu.id,round]);
- const roundMs=Math.max(1950,4900-(level-1)*190-round*140);
- const swingMs=Math.max(650,1700-(level-1)*72-round*50);
+ const roundMs=Math.max(2700,7200-(level-1)*340-round*100);
+ const swingMs=Math.max(850,2300-(level-1)*125-round*65);
  useEffect(()=>{if(result)return;lock.current=false;tapCount.current=0;setTaps(0);start.current=performance.now();deadline.current=start.current+roundMs;setTime(1);setNeedle(0);
  const timer=setInterval(()=>{if(ended.current||lock.current)return;const n=performance.now();const frac=Math.max(0,(deadline.current-n)/roundMs);setTime(frac);const phase=((n-start.current)%swingMs)/swingMs;setNeedle(phase<.5?phase*2:(1-phase)*2);if(frac<=0)miss('시간 초과!')},35);
  return()=>clearInterval(timer)},[round,result]);

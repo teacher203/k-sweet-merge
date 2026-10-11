@@ -290,3 +290,16 @@
 .shop-items article>b{color:#9c657b;font-size:13px;text-align:center}
 .shop-items article>small{font-size:10px;color:#b38b9a;white-space:normal;text-align:center}
 .shop-items article button{margin-top:auto}
+
+/* Bakery sound controls and accurate food artwork */
+.audio-control-strip{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:4px 15px 9px;background:#fff7ef;color:#b2798d;font-size:11px}
+.audio-control-strip button,.sound-switch{border:1px solid #f0ccda!important;border-radius:11px!important;background:#fffef9!important;color:#aa6487!important;padding:7px 10px!important;font-size:12px!important;font-weight:850!important;min-width:0!important}
+.sound-switch{margin-left:5px!important}
+.food-art{display:inline-block;object-fit:contain;width:52px;height:52px;vertical-align:middle;flex:none}
+.food-art-mini{width:26px;height:26px}
+.food-emoji{display:inline-flex;justify-content:center;align-items:center;font-size:35px}
+.food-emoji.food-art-mini{font-size:23px}
+.order-food-name{display:flex;align-items:center;gap:6px}
+.recipe-gallery .recipe-entry>.food-art,.recipe-gallery .recipe-entry>.food-emoji{width:70px;height:70px;display:grid;place-items:center;margin:0 auto}
+.recipe-gallery .recipe-entry>.food-emoji{font-size:42px}
+.recipe-hero-food{width:112px;height:112px;object-fit:contain;filter:drop-shadow(0 5px 6px #a8758440)}

@@ -247,3 +247,12 @@
  .staff-portrait,.staff-portrait>.crew-portrait-frame{height:174px!important;min-height:174px!important}
  .staff-portrait>.crew-portrait-frame>img{height:168px!important;max-height:168px!important}
 }
+
+/* K-BAKERY CAFE readable title and learning-first identity */
+.cafe2-brand h1{font-size:clamp(18px,5.3vw,25px)!important;letter-spacing:-.8px!important;white-space:nowrap}
+.sweet-logo strong{font-size:clamp(19px,5.3vw,24px)!important;white-space:nowrap;letter-spacing:-.7px}
+.cafe2-title>span{line-height:1.5;text-align:center}
+.recipe-class section{word-break:keep-all}
+.recipe-entry.unknown{filter:none!important;opacity:1!important;background:#fffbf5}
+.recipe-entry.unknown>span{font-size:40px}
+@media(max-width:360px){.cafe2-brand h1{font-size:18px!important}}

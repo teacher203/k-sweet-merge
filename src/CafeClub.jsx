@@ -42,7 +42,7 @@ export default function CafeClub({s,setS,flash}){
  const seed=customSeed||currentSeed;
  const timeLeft=Math.max(0,60-elapsed);
  const focus=s.cafeFocus||'balanced';
- const level=Math.min(10,Math.max(1,1+Math.floor((s.clubWins||0)/4)));
+ const level=3; // Daily and friend league run at the SAME fixed difficulty for fair comparison.
  const run=useRef(null);const ticketsRef=useRef([]);const playingRef=useRef(false);const timeRef=useRef(0);const nextIndex=useRef(0);const comboRef=useRef(0);const scoreRef=useRef(0);const missedRef=useRef(0);const servedRef=useRef(0);const lastTick=useRef(0);
  const finish=()=>{
   if(!playingRef.current)return;playingRef.current=false;setPlaying(false);const points=scoreRef.current,served=servedRef.current,missed=missedRef.current;
@@ -59,7 +59,7 @@ export default function CafeClub({s,setS,flash}){
   if(!playingRef.current)return;
   const n=performance.now(),delta=Math.min(.3,(n-lastTick.current)/1000);lastTick.current=n;timeRef.current+=delta;setElapsed(timeRef.current);
   if(timeRef.current>=60){finish();return}
-  const drain=delta*(1+(level-1)*.065);
+  const drain=delta*(1+.45*(timeRef.current/60)); // Gradually increase pressure for everyone equally.
   let queue=ticketsRef.current.map(t=>({...t,remaining:t.remaining-drain}));
   let spoiled=queue.filter(t=>t.remaining<=0).length;
   if(spoiled){missedRef.current+=spoiled;comboRef.current=0;setMiss(missedRef.current);setCombo(0);setLastNote('손님이 떠났어요! 다음 주문에 집중하세요.');playSound('wrong')}
@@ -98,7 +98,7 @@ export default function CafeClub({s,setS,flash}){
  {page==='play'&&<div className="kc-section">
   <div className="kc-hero"><div className="kc-hero-copy"><span>THE SIXTY-SECOND SHIFT</span><h3>60초 카페 러시</h3><p>세 명의 손님을 동시에 응대하며 가장 급한 주문을 먼저 처리하세요.</p></div><img src="/art/food-camellia.svg" alt="동백 케이크"/></div>
   <div className="kc-stats"><div><small>남은 시간</small><strong>{Math.ceil(timeLeft)}<span>초</span></strong></div><div><small>점수</small><strong>{score.toLocaleString()}</strong></div><div><small>콤보</small><strong>×{combo}</strong></div></div>
-  {!playing&&!result&&<div className="kc-intro"><p>손님 3명이 동시에 도착합니다. <b>주문서의 메뉴와 같은 상품을 선택해서 서빙</b>하세요. 주문이 밀리면 손님이 떠나고, 정확하게 빠르게 서빙할수록 점수가 높아집니다.</p><div className="kc-tiprow"><span>🎯 동일 조건 일일 도전</span><span>🧠 우선순위 판단</span><span>🔥 콤보 보너스</span></div><button className="kc-main-btn" onClick={start}>오늘의 60초 경기 시작 <span>→</span></button></div>}
+  {!playing&&!result&&<div className="kc-intro"><p>손님 3명이 동시에 도착합니다. <b>주문서의 메뉴와 같은 상품을 선택해서 서빙</b>하세요. 주문이 밀리면 손님이 떠나고, 정확하게 빠르게 서빙할수록 점수가 높아집니다.</p><div className="kc-tiprow"><span>🎯 동일 조건 일일 도전</span><span>🧠 우선순위 판단</span><span>⏩ 후반부 속도 증가</span><span>🔥 콤보 보너스</span></div><button className="kc-main-btn" onClick={start}>오늘의 60초 경기 시작 <span>→</span></button></div>}
   {playing&&<><div className="kc-orders">{tickets.map((t,i)=><div className={'kc-ticket '+(t.remaining<6?'urgent':'')} key={t.id}><div className="kc-ticket-top"><span>{t.face} {t.vip?'VIP 손님':'손님 '+(i+1)}</span><b>{Math.ceil(t.remaining)}초</b></div><div className="kc-ticket-main"><Product id={t.product}/><div><strong>{itemBy(t.product).name}</strong><small>{t.vip?'VIP 보너스 ×1.4':'빠른 서빙 보너스'}</small></div></div><div className="kc-ticket-timer"><span style={{width:(t.remaining/t.initial*100)+'%'}}/></div><div className="kc-ticket-actions">{[t.product,ITEMS[(ITEMS.findIndex(x=>x.id===t.product)+4)%ITEMS.length].id,ITEMS[(ITEMS.findIndex(x=>x.id===t.product)+7)%ITEMS.length].id].sort((a,b)=>hash(String(t.id)+a)%11-hash(String(t.id)+b)%11).map((id,j)=><button key={j} onClick={()=>serve(t,id)} aria-label={itemBy(id).name+' 서빙'}><Product id={id}/></button>)}</div></div>)}</div><div className="kc-live"><span>{lastNote}</span><span>완료 {total}건 · 실수 {miss}회</span></div></>}
   {!playing&&result&&<div className="kc-results"><span className="kc-result-icon">{result.won?'🏆':'☕'}</span><small>{result.won?'SHIFT COMPLETE':'SHIFT FINISHED'}</small><h3>{result.points.toLocaleString()}점</h3><p>서빙 {result.served}건 · 실수 {result.missed}회</p><div className="kc-reward"><span>🪙 +{result.coins}코인</span><span>⭐ +{result.earnedExp}경험치</span></div><button className="kc-main-btn" onClick={start}>다시 도전하기 ↗</button><button className="kc-secondary" onClick={()=>{setPage('league');setCustomSeed(result.seed)}}>친구에게 도전장 보내기 →</button></div>}
   <div className="kc-footnote">실력형 플레이 모드 · 매일 같은 주문 순서로 친구 기록에 도전할 수 있습니다. 서버 검증 없는 기록은 공식 순위가 아닙니다.</div>
@@ -111,7 +111,7 @@ export default function CafeClub({s,setS,flash}){
   <p className="kc-footnote">경영 전략과 투자 효과는 주문 수익 및 자동 수익에 반영됩니다. 이전 코인·직원·레시피 기록은 유지됩니다.</p>
  </div>}
  {page==='league'&&<div className="kc-section">
- <div className="kc-section-title"><div><small>FRIEND CHALLENGE</small><h3>오늘의 카페 리그</h3></div><span>STAGE {level}</span></div>
+ <div className="kc-section-title"><div><small>FRIEND CHALLENGE</small><h3>오늘의 카페 리그</h3></div><span>🎯 표준 난이도</span></div>
  <div className="kc-scoreboard"><div><small>내 최고 기록</small><b>{(s.clubBest||0).toLocaleString()}</b></div><div><small>오늘 최고</small><b>{dailyScore.toLocaleString()}</b></div><div><small>도전 횟수</small><b>{s.clubRuns||0}</b></div></div>
  <label className="kc-label">내 카페 닉네임 (실명 대신 사용)</label><div className="kc-inline"><input maxLength={12} value={nameInput} onChange={e=>setNameInput(e.target.value)} placeholder="예: 딸기마카롱"/><button onClick={saveName}>저장</button></div>
  <div className="kc-share"><strong>💌 친구에게 도전장을 보내세요</strong><p>친구가 아래 공유 코드를 입력하면 <b>같은 경기 조건</b>에서 내 점수에 도전할 수 있어요.</p><button onClick={copy}>📋 내 최고 점수 코드 복사하기</button><div className="kc-inline"><input value={codeInput} onChange={e=>setCodeInput(e.target.value)} placeholder="친구에게 받은 KB-... 코드를 붙여넣기"/><button onClick={importFriend}>불러오기</button></div></div>

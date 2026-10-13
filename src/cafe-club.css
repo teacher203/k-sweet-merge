@@ -36,3 +36,41 @@
 .kc-ticket-actions .kc-deliver{grid-column:1/-1;background:linear-gradient(105deg,#aa5672,#d58095);color:#fff;font-size:14px;font-weight:900;min-height:54px}
 .kc-ticket-actions .kc-deliver:disabled{background:#f2e6df;color:#987e7c;opacity:1}
 .kc-ticket-actions button:disabled:not(.kc-deliver){opacity:.42}
+
+/* Season 01 premium animated café stage: full sized living characters, not blank cards */
+.kc-game-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:13px}
+.kc-game-head>div{flex:1;min-width:0}.kc-game-head>div>span{font-size:9px;letter-spacing:1.2px;color:#ab7884;font-weight:850}
+.kc-game-head h3{font-size:24px;color:#63434e;letter-spacing:-1px;margin:4px 0}.kc-game-head p{font-size:11px;color:#9b7780;line-height:1.5;margin:0}
+.kc-game-head>b{white-space:nowrap;background:#64474f;color:#fff0e8;font-size:9px;padding:8px;border-radius:7px;letter-spacing:1px}
+.kc-world{height:auto;aspect-ratio:900/650;min-height:270px;max-height:395px;position:relative;overflow:hidden;border-radius:18px;background:#f8e3d8;box-shadow:0 12px 29px #79565d3d;isolation:isolate;border:1px solid #ddbdad}
+.kc-world-room{width:100%;height:100%;position:absolute;inset:0;object-fit:cover;display:block;filter:saturate(.88)}
+.kc-world:after{content:"";z-index:2;pointer-events:none;position:absolute;inset:0;background:linear-gradient(180deg,#fff9e40c 30%,transparent 52%,#6e43351a 100%)}
+.kc-world-marquee{position:absolute;top:4%;left:20%;right:20%;z-index:5;background:#fff9f0ea;border:1px solid #eedad0;box-shadow:0 2px 8px #7255552a;padding:7px 8px 6px;text-align:center;border-radius:12px;display:flex;align-items:center;flex-direction:column;gap:2px}
+.kc-world-marquee>span{color:#bd858e;font-size:7px;font-weight:900;letter-spacing:1.8px}.kc-world-marquee>strong{font-size:clamp(10px,3vw,15px);color:#80505e;letter-spacing:1.2px}
+.kc-world-ambient{position:absolute;z-index:5;color:#fff5dd;font-size:25px;filter:drop-shadow(0 1px 5px #cba588);pointer-events:none;animation:kcTwinkle 1.7s ease-in-out infinite alternate}.kc-world-ambient.a1{left:7%;top:25%}.kc-world-ambient.a2{right:8%;top:35%;animation-delay:.7s}
+.kc-actor{position:absolute;z-index:4;top:30%;height:62%;width:32%;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;--actor-delay:0s}
+.kc-actor-mocha{left:3%}.kc-actor-berry{left:34%;z-index:6}.kc-actor-bong{right:3%}
+.kc-actor>img{object-fit:contain;width:100%;height:75%;transform-origin:50% 83%;filter:drop-shadow(0 8px 5px #775b604b);animation:kcCharacterIdle 2.2s ease-in-out infinite;animation-delay:var(--actor-delay)}
+.kc-actor-busy>img{animation:kcCharacterWork .47s ease-in-out infinite alternate}
+.kc-actor-ready>img{animation:kcCharacterReady .48s ease-in-out infinite alternate}
+.kc-actor-cheer>img{animation:kcCharacterReady .38s ease-in-out infinite alternate}
+.kc-actor-speech{background:#fff9f1f2;border:1px solid #e9c7c7;color:#885c6c;box-shadow:0 3px 6px #75555b21;padding:5px 6px;border-radius:11px;min-width:69px;font-size:clamp(8px,2.6vw,11px);text-align:center;font-weight:900;position:relative;margin:0 0 -7px;z-index:7;white-space:nowrap}
+.kc-actor-speech:after{content:"";position:absolute;top:100%;left:47%;border:5px solid transparent;border-top-color:#fff9f1}
+.kc-actor-tag{background:#745963ee;color:#fff8eb;padding:4px 6px;border-radius:8px;position:absolute;z-index:8;bottom:6%;left:9%;right:9%;display:flex;justify-content:center;gap:4px;align-items:center;box-shadow:0 2px 8px #593b4e3d}
+.kc-actor-tag b{font-size:clamp(10px,2.9vw,13px)}.kc-actor-tag span{font-size:clamp(8px,2vw,10px);color:#f6d8d3}
+.kc-actor-tool{position:absolute;bottom:26%;right:0;font-size:clamp(20px,7vw,34px);z-index:8;animation:kcToolBounce .45s infinite alternate;filter:drop-shadow(0 2px 3px #8c545b3a)}
+.kc-world-counter{position:absolute;bottom:1%;left:1%;right:1%;height:15%;z-index:9;display:flex;align-items:center;justify-content:space-between;padding:0 7%;background:linear-gradient(145deg,#b67f70f3,#996c63fa);border-top:9px solid #fff0de;box-shadow:0 -5px 9px #573b3320;border-radius:7px}
+.kc-world-counter>div{display:flex;gap:3px}.kc-world-counter>div span{font-size:clamp(16px,5vw,27px);filter:drop-shadow(0 2px 2px #533c363a)}
+.kc-counter-caption{font-size:clamp(7px,1.9vw,10px);color:#fff1df;letter-spacing:1.1px;font-weight:900;text-align:center}
+.kc-world-guests{position:absolute;right:3%;bottom:17%;display:flex;gap:0;z-index:10}.kc-world-guests span{font-size:clamp(14px,4vw,23px);animation:kcGuest 1.3s ease-in-out infinite alternate;animation-delay:var(--guest-delay);filter:drop-shadow(0 2px 2px #76515377)}
+.kc-world-combo{z-index:11;position:absolute;top:21%;left:20%;right:20%;text-align:center;pointer-events:none;color:#fff8e1;text-shadow:0 2px 4px #8b4f67,0 0 13px #bb708e;font-size:clamp(18px,6vw,30px);font-weight:950;animation:kcCombo .6s infinite alternate}
+.kc-world-live{outline:3px solid #f2b1c0;outline-offset:-3px}
+@keyframes kcCharacterIdle{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-5px) rotate(1deg)}}
+@keyframes kcCharacterWork{to{transform:translateY(-5px) rotate(4deg) scale(1.025)}}
+@keyframes kcCharacterReady{to{transform:translateY(-14px) rotate(-3deg) scale(1.04)}}
+@keyframes kcToolBounce{to{transform:translateY(-9px) rotate(-9deg)}}
+@keyframes kcTwinkle{to{transform:scale(.7);opacity:.3}}
+@keyframes kcGuest{to{transform:translateY(-5px)}}
+@keyframes kcCombo{to{transform:scale(1.09) rotate(-2deg)}}
+@media(prefers-reduced-motion:reduce){.kc-actor img,.kc-world-ambient,.kc-world-guests span,.kc-world-combo,.kc-actor-tool{animation:none!important}}
+@media(max-width:360px){.kc-world{min-height:236px}.kc-actor-speech{padding:4px 3px;min-width:62px}.kc-actor-tag{gap:2px}.kc-world-counter{height:16%}}

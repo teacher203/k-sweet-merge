@@ -106,7 +106,7 @@ export default function CafeClub({s,setS,flash}){
   const job=jobsRef.current[type];
   if(!job||job.ticketId!==active.id||performance.now()<job.readyAt){setLastNote('먼저 '+(type==='bread'?'오븐':'음료 작업대')+'에서 제조해 주세요.');return}
   jobsRef.current={...jobsRef.current,[type]:null};setJobs({...jobsRef.current});
-  const earned=Math.round(itemBy(active.product).points*(active.vip?1.4:1)+(active.remaining/active.initial)*85+Math.min(10,comboRef.current)*25);
+  const earned=Math.round(itemBy(active.product).points*(active.vip?1.4:1)+(active.remaining/active.initial)*85+Math.min(10,comboRef.current)*25+(job.perfect?85:0));
   scoreRef.current+=earned;servedRef.current++;comboRef.current++;setScore(scoreRef.current);setTotal(servedRef.current);setCombo(comboRef.current);
   ticketsRef.current=ticketsRef.current.filter(t=>t.id!==active.id);
   ticketsRef.current.push(createTicket(seed,nextIndex.current++,level));setTickets([...ticketsRef.current]);
@@ -119,8 +119,18 @@ export default function CafeClub({s,setS,flash}){
   const type=itemBy(choice).type;
   if(jobsRef.current[type]){setLastNote(type==='bread'?'오븐이 사용 중입니다. 음료 주문을 확인해 보세요.':'음료 작업대가 사용 중입니다.');return}
   const duration=(type==='bread'?3200:1700);
-  jobsRef.current={...jobsRef.current,[type]:{ticketId:active.id,product:choice,readyAt:performance.now()+duration}};
+  const startedAt=performance.now();
+  jobsRef.current={...jobsRef.current,[type]:{ticketId:active.id,product:choice,startedAt,duration,readyAt:startedAt+duration,perfect:false}};
   setJobs({...jobsRef.current});setLastNote(type==='bread'?'🍞 오븐에서 굽는 중! 다른 작업대도 활용하세요.':'🥤 음료 제조 중! 오븐도 활용해 보세요.');playSound('click');
+ };
+ const precision=(type)=>{
+  if(!playingRef.current)return;
+  const job=jobsRef.current[type];if(!job||clock>=job.readyAt)return;
+  const progress=(performance.now()-job.startedAt)/job.duration;
+  if(progress<.54){setLastNote('조금 더 기다려요! 정확한 순간에 마무리하면 추가 점수!');playSound('wrong');return}
+  if(progress>.90){setLastNote('타이밍이 늦었어요. 완성을 기다려 주세요.');return}
+  jobsRef.current={...jobsRef.current,[type]:{...job,readyAt:performance.now(),perfect:true}};
+  setJobs({...jobsRef.current});setLastNote('✨ PERFECT FINISH! +85점 보너스');playSound('combo');
  };
  const inspect=useMemo(()=>s.clubHistory||[],[s.clubHistory]);
  const dailyScore=s.clubDaily?.seed===currentSeed?s.clubDaily.best:0;
@@ -142,8 +152,8 @@ export default function CafeClub({s,setS,flash}){
   <div className="kc-game-head"><div><span>✦ PREMIUM BAKERY SHIFT</span><h3>오늘의 카페 러시</h3><p>모카·딸기·봉봉과 함께, 60초 동안 나만의 카페를 운영하세요.</p></div><b>SEASON 01</b></div>
  <CafeStage jobs={jobs} clock={clock} combo={combo} playing={playing} lastNote={lastNote} facesInLine={tickets.map(t=>t.face)}/>
   <div className="kc-stats"><div><small>남은 시간</small><strong>{Math.ceil(timeLeft)}<span>초</span></strong></div><div><small>점수</small><strong>{score.toLocaleString()}</strong></div><div><small>콤보</small><strong>×{combo}</strong></div></div>
-  {!playing&&!result&&<div className="kc-intro"><p>손님 3명이 동시에 도착합니다. <b>주문서의 메뉴를 골라 제조한 뒤 완성되면 서빙</b>하세요. 주문이 밀리면 손님이 떠나고, 오븐과 음료 작업대를 동시에 활용하면 더 높은 점수를 얻습니다.</p><div className="kc-tiprow"><span>🎯 동일 조건 일일 도전</span><span>🧠 우선순위 판단</span><span>🔥 2개 작업대 병렬 가동</span><span>⏩ 후반부 속도 증가</span><span>🔥 콤보 보너스</span></div><button className="kc-main-btn" onClick={start}>오늘의 60초 경기 시작 <span>→</span></button></div>}
-  {playing&&<><div className="kc-orders">{tickets.map((t,i)=><div className={'kc-ticket '+(t.remaining<6?'urgent':'')} key={t.id}><div className="kc-ticket-top"><span>{t.face} {t.vip?'VIP 손님':'손님 '+(i+1)}</span><b>{Math.ceil(t.remaining)}초</b></div><div className="kc-ticket-main"><Product id={t.product}/><div><strong>{itemBy(t.product).name}</strong><small>{t.vip?'VIP 보너스 ×1.4':'빠른 서빙 보너스'}</small></div></div><div className="kc-ticket-timer"><span style={{width:(t.remaining/t.initial*100)+'%'}}/></div><div className="kc-ticket-actions">{jobs[itemBy(t.product).type]?.ticketId===t.id?<button className="kc-deliver" onClick={()=>serve(t,t.product)} disabled={clock<jobs[itemBy(t.product).type].readyAt}>{clock>=jobs[itemBy(t.product).type].readyAt?"✅ 완성! 서빙하기":"⏳ 제조 중..."}</button>:[t.product,ITEMS[(ITEMS.findIndex(x=>x.id===t.product)+4)%ITEMS.length].id,ITEMS[(ITEMS.findIndex(x=>x.id===t.product)+7)%ITEMS.length].id].sort((a,b)=>hash(String(t.id)+a)%11-hash(String(t.id)+b)%11).map((id,j)=><button key={j} disabled={!!jobs[itemBy(id).type]} onClick={()=>prepare(t,id)} title={itemBy(id).name+" 준비"} aria-label={itemBy(id).name+" 제조 시작"}><Product id={id}/></button>)}</div></div>)}</div><div className="kc-stations"><span>🔥 오븐 {jobs.bread?(clock>=jobs.bread.readyAt?"✅ 완성":"⏳ 가동 중"):"대기"}</span><span>🥤 음료 {jobs.drink?(clock>=jobs.drink.readyAt?"✅ 완성":"⏳ 가동 중"):"대기"}</span></div><div className="kc-live"><span>{lastNote}</span><span>완료 {total}건 · 실수 {miss}회</span></div></>}
+  {!playing&&!result&&<div className="kc-intro"><p>손님 3명이 동시에 도착합니다. <b>주문서의 메뉴를 골라 제조한 뒤 완성되면 서빙</b>하세요. 주문이 밀리면 손님이 떠나고, 오븐과 음료 작업대를 동시에 활용하고, 제조 게이지 54~90% 사이에 정밀 마무리를 누르면 보너스 점수를 얻습니다.</p><div className="kc-tiprow"><span>🎯 동일 조건 일일 도전</span><span>🧠 우선순위 판단</span><span>🔥 2개 작업대 병렬 가동</span><span>✨ 제조 타이밍 보너스</span><span>⏩ 후반부 속도 증가</span><span>🔥 콤보 보너스</span></div><button className="kc-main-btn" onClick={start}>오늘의 60초 경기 시작 <span>→</span></button></div>}
+  {playing&&<><div className="kc-orders">{tickets.map((t,i)=><div className={'kc-ticket '+(t.remaining<6?'urgent':'')} key={t.id}><div className="kc-ticket-top"><span>{t.face} {t.vip?'VIP 손님':'손님 '+(i+1)}</span><b>{Math.ceil(t.remaining)}초</b></div><div className="kc-ticket-main"><Product id={t.product}/><div><strong>{itemBy(t.product).name}</strong><small>{t.vip?'VIP 보너스 ×1.4':'빠른 서빙 보너스'}</small></div></div><div className="kc-ticket-timer"><span style={{width:(t.remaining/t.initial*100)+'%'}}/></div><div className="kc-ticket-actions">{jobs[itemBy(t.product).type]?.ticketId===t.id?<button className="kc-deliver" onClick={()=>serve(t,t.product)} disabled={clock<jobs[itemBy(t.product).type].readyAt}>{clock>=jobs[itemBy(t.product).type].readyAt?"✅ 완성! 서빙하기":"⏳ 제조 중..."}</button>:[t.product,ITEMS[(ITEMS.findIndex(x=>x.id===t.product)+4)%ITEMS.length].id,ITEMS[(ITEMS.findIndex(x=>x.id===t.product)+7)%ITEMS.length].id].sort((a,b)=>hash(String(t.id)+a)%11-hash(String(t.id)+b)%11).map((id,j)=><button key={j} disabled={!!jobs[itemBy(id).type]} onClick={()=>prepare(t,id)} title={itemBy(id).name+" 준비"} aria-label={itemBy(id).name+" 제조 시작"}><Product id={id}/></button>)}</div></div>)}</div><div className="kc-stations">{[['bread','🔥','베이킹'],['drink','🥤','바리스타']].map(([type,emoji,title])=>{const job=jobs[type];const percent=job?Math.min(100,Math.max(0,(clock-job.startedAt)/job.duration*100)):0;const ready=job&&clock>=job.readyAt;return <div key={type} className={'kc-station '+(ready?'finished':'')}><b>{emoji} {title}</b><small>{job?(ready?'완성! 지금 서빙하세요':percent<54?'제조 중...':'정밀 마무리 기회!'):'다음 주문 준비 중'}</small><div className="kc-station-track"><span style={{width:percent+'%'}}/></div><button disabled={!job||ready} onClick={()=>precision(type)}>{ready?'✅ 완료':!job?'대기':'✨ 타이밍 맞추기'}</button></div>})}</div><div className="kc-live"><span>{lastNote}</span><span>완료 {total}건 · 실수 {miss}회</span></div></>}
   {!playing&&result&&<div className="kc-results"><span className="kc-result-icon">{result.won?'🏆':'☕'}</span><small>{result.won?'SHIFT COMPLETE':'SHIFT FINISHED'}</small><h3>{result.points.toLocaleString()}점</h3><p>서빙 {result.served}건 · 실수 {result.missed}회</p><div className="kc-reward"><span>🪙 +{result.coins}코인</span><span>⭐ +{result.earnedExp}경험치</span></div><button className="kc-main-btn" onClick={start}>다시 도전하기 ↗</button><button className="kc-secondary" onClick={()=>{setPage('league');setCustomSeed(result.seed)}}>친구에게 도전장 보내기 →</button></div>}
   <div className="kc-footnote">실력형 플레이 모드 · 매일 같은 주문 순서로 친구 기록에 도전할 수 있습니다. 서버 검증 없는 기록은 공식 순위가 아닙니다.</div>
  </div>}

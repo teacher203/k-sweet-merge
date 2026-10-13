@@ -24,16 +24,16 @@ const UPGRADE=[
 const nextCustomer=(index,level)=>{const menu=MENU[(index*7+Math.floor(index/3)*3)%MENU.length];return {id:index,menu:menu.id,face:FACES[(index*5)%FACES.length],wait:clamp(43+level*3-index%4*3,30,75),x:105+(index%3)*17}};
 export default function BakeryWorld({s,setS,flash,onOldCafe}){
  const [tab,setTab]=useState('floor'),[orders,setOrders]=useState([]),[customerIdx,setCustomerIdx]=useState(0),[selected,setSelected]=useState(null),[phase,setPhase]=useState(''),[touches,setTouches]=useState([]),[quality,setQuality]=useState(0),[bakeStart,setBakeStart]=useState(0),[timer,setTimer]=useState(0),[clock,setClock]=useState(0),[anim,setAnim]=useState(null),[feedback,setFeedback]=useState('');
- const last=useRef(Date.now()),ordersRef=useRef([]),orderId=useRef(0),selectedRef=useRef(null),phaseRef=useRef(''),gestureRef=useRef(false),animTimer=useRef(0),sceneRef=useRef(null);
+ const last=useRef(Date.now()),ordersRef=useRef([]),orderId=useRef(0),animTimer=useRef(0),sceneRef=useRef(null);
  const world=s.bakeryWorld||{level:1,exp:0,served:0,failed:0,renovations:{},best:0};
  const lv=world.level||1,ren=world.renovations||{};
  const selectedOrder=orders.find(o=>o.id===selected);
  const menu=selectedOrder&&MENU.find(m=>m.id===selectedOrder.menu);
  const ovenBonus=ren.oven||0;
  const duration=menu?Math.max(3,menu.bake*(1-ovenBonus*.2)):0;
- const fixState=(update)=>setS(v=>({...v,bakeryWorld:update(v.bakeryWorld||{level:1,exp:0,served:0,failed:0,renovations:{},best:0})}));
+ 
  useEffect(()=>{let alive=true;const id=window.setInterval(()=>{if(!alive)return;const now=Date.now(),delta=clamp((now-last.current)/1000,0,1.5);last.current=now;setClock(now);setTimer(t=>t+delta);
- setOrders(prev=>{let list=prev.map(o=>({...o,wait:o.wait-delta}));const expired=list.filter(o=>o.wait<=0);if(expired.length){fixState(w=>({...w,failed:(w.failed||0)+expired.length}));setFeedback('손님이 기다리다 떠났어요. 다음 주문은 더 빠르게!')}
+ setOrders(prev=>{let list=prev.map(o=>({...o,wait:o.wait-delta}));const expired=list.filter(o=>o.wait<=0);if(expired.length){window.setTimeout(()=>setS(v=>({...v,bakeryWorld:{...(v.bakeryWorld||{}),failed:((v.bakeryWorld||{}).failed||0)+expired.length}})),0);setFeedback('손님이 기다리다 떠났어요. 다음 주문은 더 빠르게!')}
  list=list.filter(o=>o.wait>0);let count=orderId.current;if(count===0){list=[nextCustomer(1,lv),nextCustomer(2,lv)];count=3}
  if(list.length<(ren.seat?4:3)&&count<9999&&Math.random()<delta*.4){list.push(nextCustomer(count,lv));count++}
  orderId.current=count;ordersRef.current=list;return list;

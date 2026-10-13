@@ -2,6 +2,7 @@ import React,{useEffect,useMemo,useRef,useState} from 'react';
 import{createRoot}from'react-dom/client';
 import './sweetcafe.css';
 import OrderGame from './OrderGame.jsx';
+import CafeClub from './CafeClub.jsx';
 import RecipeClass from './RecipeClass.jsx';
 import {playSound,setSoundEnabled,startMusic,stopMusic} from './sound.js';
 
@@ -75,7 +76,8 @@ function App(){
  useEffect(()=>{localStorage.setItem('ksweet-cafe-v2',JSON.stringify(s))},[s]);
  useEffect(()=>{const tick=()=>{const time=Date.now();setNow(time);setS(p=>{
  const steps=Math.min(30,Math.floor((time-p.last)/5000));if(steps<=0)return p;
- const workers=p.crew.filter(w=>w.station);const earnings=workers.reduce((sum,w)=>sum+(7+w.lv*4),0)*steps;
+ const workers=p.crew.filter(w=>w.station);const base=workers.reduce((sum,w)=>sum+(7+w.lv*4),0)*steps;
+ const earnings=Math.round(base*(1+(p.marketingTraining||0)*.08)*(p.cafeFocus==='service'?1.1:1));
  const orders=p.orders.map(o=>({...o,wait:Math.max(0,o.wait-steps*5)})).filter(o=>o.wait>0);
  let orderCursor=p.orderCursor||0;
  if(orders.length<3){orders.push(randomOrder({...p,orderCursor}));orderCursor+=1}
@@ -86,11 +88,11 @@ function App(){
  const crewBy=(type)=>s.crew.filter(w=>w.station===type);
  const crewSkill=type=>crewBy(type).reduce((n,w)=>n+w.lv,0);
  const serviceSpeed=Math.max(1,crewSkill('서비스'));
- const price=(m)=>m.pay+crewSkill(m.type)*7;
+ const price=(m)=>Math.round((m.pay+crewSkill(m.type)*7)*(1+(s.qualityTraining||0)*.055)*(m.type==='디저트'&&s.cafeFocus==='bakery'?1.12:1));
  const lvl=1+Math.floor(s.exp/120);
  const arcadeStage=Math.min(12,1+Math.floor((s.speedWins||0)/5));
  const nextArcadeAt=(Math.floor((s.speedWins||0)/5)+1)*5;
- const earned=s.crew.filter(w=>w.station).reduce((n,w)=>n+7+w.lv*4,0)*12;
+ const earned=Math.round(s.crew.filter(w=>w.station).reduce((n,w)=>n+7+w.lv*4,0)*12*(1+(s.marketingTraining||0)*.08)*(s.cafeFocus==='service'?1.1:1));
  const flash=t=>{setMsg(t);window.setTimeout(()=>setMsg(v=>v===t?'':v),3600)};
  const spend=(value)=>s.coins>=value;
  function hire(id){const spec=CREW.find(x=>x.id===id);if(!spec||s.crew.some(x=>x.id===id))return;if(!spend(spec.base)){flash('코인이 부족해요! 주문을 완료해 보세요.');return}setS(v=>({...v,coins:v.coins-spec.base,crew:[...v.crew,{id,lv:1,station:null}]}));flash(spec.name+' 직원이 카페에 왔어요! 💗')}
@@ -108,7 +110,7 @@ function App(){
  const item=MENU.find(m=>m.id===o.menu);
  const qualityBonus=info.quality==='perfect'?Math.round(price(item)*.4):0;
  const arcadeBonus=Math.round(Math.min(300,(info.score||0)*.08));
- const bonus=Math.round(price(item)*(1+crewSkill('서비스')*.05))+qualityBonus+arcadeBonus;
+ const bonus=Math.round(price(item)*(1+crewSkill('서비스')*.05)*(1+(s.kitchenTraining||0)*.05))+qualityBonus+arcadeBonus;
  setS(v=>({...v,coins:v.coins+bonus,exp:v.exp+20+Math.min(55,Math.floor((info.score||0)/80))+(qualityBonus?15:0),rep:v.rep+1,served:v.served+1,speedWins:(v.speedWins||0)+1,orders:v.orders.filter(q=>q.id!==o.id),best:rush&&rush.seconds>0?Math.max(v.best||0,(rush.score||0)+1):v.best}));
  if(rush&&rush.seconds>0)setRush(v=>v?{...v,score:v.score+1}:v);
  if(((s.speedWins||0)+1)%5===0)playSound('level');else playSound('win');
@@ -132,7 +134,7 @@ function App(){
  function claimMission(id){if(s.claim[id])return;const ok=id==='serve'?s.served>=5:id==='staff'?s.crew.length>=3:id==='decor'?s.inventory.length>=4:false;if(!ok)return;setS(v=>({...v,gems:v.gems+2,claim:{...v.claim,[id]:true}}));flash('보석 +2 획득! 💎')}
  function learnRecipe(id){const m=MENU.find(x=>x.id===id);if(!m)return;setS(v=>v.recipes.includes(id)?v:{...v,recipes:[...v.recipes,id],exp:v.exp+25,coins:v.coins+50});flash('📖 '+m.name+' 레시피 학습 완료! +50코인 +25경험치')}
  function toggleMusic(){if(musicOn){stopMusic();setMusicOn(false)}else{setSoundEnabled(true);setSoundOn(true);setMusicOn(startMusic())}}
- const nav=[['cafe','🏠','카페'],['staff','👩‍🍳','직원'],['recipe','📖','배우기'],['interior','🛋️','꾸미기'],['draw','🎁','뽑기'],['league','🏆','리그']];
+ const nav=[['club','✦','클럽'],['cafe','🏠','카페'],['staff','👩‍🍳','직원'],['recipe','📖','배우기'],['interior','🛋️','꾸미기'],['draw','🎁','뽑기']];
  return <div className="sweet-app" onClickCapture={()=>{if(soundOn)playSound('click')}}>
  {tab!=='cafe'&&<header className="sweet-top"><div className="sweet-logo"><span>🍓 달콤한 동물 친구들의 카페</span><strong>K-BAKERY <em>CAFE</em></strong></div><div className="sweet-resources"><button className="sound-switch" onClick={()=>{setSoundOn(v=>{setSoundEnabled(!v);if(v){stopMusic();setMusicOn(false)}return !v})}}>{soundOn?'🔊':'🔇'}</button><span>🪙 {s.coins.toLocaleString()}</span><span>💎 {s.gems}</span><span>⭐ Lv.{lvl}</span></div></header>}
  {s.offlineGift>0&&<div className="offline-shade"><div className="offline-modal"><div className="gift-icon">🎁</div><h2>다시 오셨네요!</h2><p>직원들이 카페를 돌보고 있었어요.</p><strong>🪙 +{s.offlineGift.toLocaleString()}</strong><button onClick={claimOffline}>보상 받기</button></div></div>}
@@ -152,8 +154,10 @@ function App(){
   <div className="cafe2-crew">{CREW.map(member=>{const hired=s.crew.find(w=>w.id===member.id);return <button className="cafe2-crew-card" onClick={()=>setTab('staff')} key={member.id}><CrewPortrait crew={member}/><b>{member.name}</b><small>{member.job.replace('고양이 ','').replace('토끼 ','').replace('판다 ','')}</small><span>{hired?'Lv.'+hired.lv:'채용하기'} <b>›</b></span></button>})}</div>
   <div className="cafe2-stage-bar"><b>⚡ 스피드 리그 STAGE {arcadeStage}</b><span>다음 단계까지 {Math.max(0,nextArcadeAt-(s.speedWins||0))}회 성공</span><div><i style={{width:(((s.speedWins||0)%5)/5*100)+'%'}}/></div></div>
   <div className="cafe2-stats">☕ 누적 주문 <b>{s.served}건</b><span>·</span> 🪙 자동 수익 <b>+{earned}/분</b></div>
-  <div className="cafe2-nav">{[['service','🍰','주문'],['staff','🐱','직원'],['recipe','📖','배우기'],['interior','🛋️','꾸미기'],['draw','🎁','뽑기'],['league','🏆','리그']].map(([id,emoji,label])=><button onClick={()=>setTab(id)} key={id}><span>{emoji}</span><small>{label}</small></button>)}</div>
+  <div className="cafe2-club-entry"><div><small>K-BAKERY CLUB</small><b>혼자 키우고, 친구와 겨루는 우리 카페</b><span>60초 배틀 · 경영 전략 · 기록 공유</span></div><button onClick={()=>setTab('club')}>클럽 입장 →</button></div>
+  <div className="cafe2-nav">{[['club','🏆','클럽'],['service','🍰','주문'],['staff','🐱','직원'],['recipe','📖','배우기'],['interior','🛋️','꾸미기'],['draw','🎁','뽑기'],['league','🏆','리그']].map(([id,emoji,label])=><button onClick={()=>setTab(id)} key={id}><span>{emoji}</span><small>{label}</small></button>)}</div>
  </div>}
+ {tab==='club'&&<CafeClub s={s} setS={setS} flash={flash}/>}
  {tab==='service'&&<section className="screen"><div className="screen-title"><small>🍓 K-BAKERY KITCHEN</small><h2>🍰 주문 받고 직접 만들기</h2><p>🎯 베이커리 중심 다양한 메뉴 + ⚡ 타이밍 배틀! 6라운드마다 속도가 빨라지고, 스피드 배틀 5회 성공마다 스테이지가 올라갑니다.</p><div className="service-stage-banner"><b>🏆 STAGE {arcadeStage}</b><span>다음 난이도까지 {Math.max(0,nextArcadeAt-(s.speedWins||0))}회 · 스피드 배틀 {(s.speedWins||0)}회 성공</span></div></div>
  {activeOrder&&MENU.find(m=>m.id===activeOrder.menu)?<OrderGame key={activeOrder.id} menu={MENU.find(m=>m.id===activeOrder.menu)} customer={activeOrder.customer} difficulty={arcadeStage} onSuccess={finishOrder} onExit={leaveOrder}/>:
  <><div className="service-banner art-service-crew">{CREW.map(member=><div key={member.id}><CrewPortrait crew={member} small/><b>{member.name}</b></div>)}</div>

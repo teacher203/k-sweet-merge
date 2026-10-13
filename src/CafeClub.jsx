@@ -34,6 +34,29 @@ function parseCode(text){
  try{return {seed,score,name:decodeURIComponent(t[3]).slice(0,12)}}catch{return null}
 }
 function Product({id}){const item=itemBy(id);return <span className="kc-product">{item.art?<img src={item.art} alt="" draggable={false}/>:<span>{item.emoji}</span>}</span>}
+const STAFF=[
+{id:'mocha',name:'모카',role:'바리스타',image:'/mascots/cute-mocha.svg',station:'drink'},
+{id:'berry',name:'딸기',role:'파티시에',image:'/mascots/cute-berry.svg',station:'bread'},
+{id:'bong',name:'봉봉',role:'매니저',image:'/mascots/cute-bong.svg',station:'manager'}
+];
+function CafeStage({jobs,clock,combo,playing,lastNote,facesInLine}){
+ const celebrate=lastNote.includes('PERFECT')||lastNote.includes('COMBO');
+ return <div className={'kc-world '+(playing?'kc-world-live':'')+(celebrate?' kc-world-party':'')} aria-label="모카와 딸기와 봉봉이 함께 일하는 베이커리 카페">
+ <img className="kc-world-room" src="/art/club-cafe-stage.svg" alt="따뜻한 크림색 카페 내부, 창가와 베이커리 작업대"/>
+ <div className="kc-world-marquee"><span>✦ OPEN TODAY</span><strong>K-BAKERY CAFE</strong><span>{playing?'LIVE SHIFT':'COZY BAKERY'}</span></div>
+ <div className="kc-world-ambient a1">✦</div><div className="kc-world-ambient a2">✧</div>
+ {STAFF.map((staff,i)=>{const work=jobs[staff.station],active=!!work&&playing,ready=active&&clock>=work.readyAt;
+ return <div key={staff.id} className={'kc-actor kc-actor-'+staff.id+(active?' kc-busy':'')+(ready?' kc-ready':'')+(celebrate?' kc-cheer':'')} style={{'--actor-delay':i*.22+'s'}}>
+ <div className="kc-actor-speech">{ready?'완성! ✨':active?(staff.station==='bread'?'굽는 중…':'제조 중…'):celebrate?'잘했어! 💗':staff.station==='manager'?'어서 오세요!':'준비 완료'}</div>
+ <img src={staff.image} alt={staff.name+' '+staff.role} draggable={false}/>
+ <div className="kc-actor-tag"><b>{staff.name}</b><span>{staff.role}</span></div>
+ {active&&<div className="kc-actor-tool">{staff.station==='bread'?'🥐':'🥤'}</div>}
+ </div>})}
+ <div className="kc-world-counter"><div><span>🥐</span><span>🍰</span><span>🍪</span></div><span className="kc-counter-caption">FRESH BAKED · MADE WITH LOVE</span><div><span>☕</span><span>🍓</span></div></div>
+ {playing&&<div className="kc-world-guests">{facesInLine.slice(0,3).map((face,i)=><span key={i} style={{'--guest-delay':i*.2+'s'}}>{face}</span>)}</div>}
+ {celebrate&&playing&&<div className="kc-world-combo">✨ {combo>=5?combo+' COMBO!':'PERFECT!'} ✨</div>}
+ </div>
+}
 export default function CafeClub({s,setS,flash}){
  const [page,setPage]=useState('play'),[playing,setPlaying]=useState(false),[elapsed,setElapsed]=useState(0),[tickets,setTickets]=useState([]),[combo,setCombo]=useState(0),[score,setScore]=useState(0),[miss,setMiss]=useState(0),[total,setTotal]=useState(0),[lastNote,setLastNote]=useState(''),[codeInput,setCodeInput]=useState(''),[friend,setFriend]=useState(null),[nameInput,setNameInput]=useState(s.clubName||''),[result,setResult]=useState(null);
  const currentSeed=challengeSeed(today());
@@ -116,7 +139,8 @@ export default function CafeClub({s,setS,flash}){
  <div className="kc-heading"><div><small>YOUR OWN BAKERY. YOUR OWN LEAGUE.</small><h2>✦ K-BAKERY CLUB</h2><p>키우고, 도전하고, 친구의 기록에 도전하세요.</p></div><span className="kc-season">SEASON 01</span></div>
  <div className="kc-tabs">{[['play','⚡ 배틀'],['manage','☕ 경영'],['league','🏆 친구·리그']].map(([v,label])=><button key={v} className={page===v?'active':''} onClick={()=>{if(!playing)setPage(v)}} disabled={playing}>{label}</button>)}</div>
  {page==='play'&&<div className="kc-section">
-  <div className="kc-hero"><div className="kc-hero-copy"><span>THE SIXTY-SECOND SHIFT</span><h3>60초 카페 러시</h3><p>세 명의 손님을 동시에 응대하며 가장 급한 주문을 먼저 처리하세요.</p></div><img src="/art/food-camellia.svg" alt="동백 케이크"/></div>
+  <div className="kc-game-head"><div><span>✦ PREMIUM BAKERY SHIFT</span><h3>오늘의 카페 러시</h3><p>모카·딸기·봉봉과 함께, 60초 동안 나만의 카페를 운영하세요.</p></div><b>SEASON 01</b></div>
+ <CafeStage jobs={jobs} clock={clock} combo={combo} playing={playing} lastNote={lastNote} facesInLine={tickets.map(t=>t.face)}/>
   <div className="kc-stats"><div><small>남은 시간</small><strong>{Math.ceil(timeLeft)}<span>초</span></strong></div><div><small>점수</small><strong>{score.toLocaleString()}</strong></div><div><small>콤보</small><strong>×{combo}</strong></div></div>
   {!playing&&!result&&<div className="kc-intro"><p>손님 3명이 동시에 도착합니다. <b>주문서의 메뉴를 골라 제조한 뒤 완성되면 서빙</b>하세요. 주문이 밀리면 손님이 떠나고, 오븐과 음료 작업대를 동시에 활용하면 더 높은 점수를 얻습니다.</p><div className="kc-tiprow"><span>🎯 동일 조건 일일 도전</span><span>🧠 우선순위 판단</span><span>🔥 2개 작업대 병렬 가동</span><span>⏩ 후반부 속도 증가</span><span>🔥 콤보 보너스</span></div><button className="kc-main-btn" onClick={start}>오늘의 60초 경기 시작 <span>→</span></button></div>}
   {playing&&<><div className="kc-orders">{tickets.map((t,i)=><div className={'kc-ticket '+(t.remaining<6?'urgent':'')} key={t.id}><div className="kc-ticket-top"><span>{t.face} {t.vip?'VIP 손님':'손님 '+(i+1)}</span><b>{Math.ceil(t.remaining)}초</b></div><div className="kc-ticket-main"><Product id={t.product}/><div><strong>{itemBy(t.product).name}</strong><small>{t.vip?'VIP 보너스 ×1.4':'빠른 서빙 보너스'}</small></div></div><div className="kc-ticket-timer"><span style={{width:(t.remaining/t.initial*100)+'%'}}/></div><div className="kc-ticket-actions">{jobs[itemBy(t.product).type]?.ticketId===t.id?<button className="kc-deliver" onClick={()=>serve(t,t.product)} disabled={clock<jobs[itemBy(t.product).type].readyAt}>{clock>=jobs[itemBy(t.product).type].readyAt?"✅ 완성! 서빙하기":"⏳ 제조 중..."}</button>:[t.product,ITEMS[(ITEMS.findIndex(x=>x.id===t.product)+4)%ITEMS.length].id,ITEMS[(ITEMS.findIndex(x=>x.id===t.product)+7)%ITEMS.length].id].sort((a,b)=>hash(String(t.id)+a)%11-hash(String(t.id)+b)%11).map((id,j)=><button key={j} disabled={!!jobs[itemBy(id).type]} onClick={()=>prepare(t,id)} title={itemBy(id).name+" 준비"} aria-label={itemBy(id).name+" 제조 시작"}><Product id={id}/></button>)}</div></div>)}</div><div className="kc-stations"><span>🔥 오븐 {jobs.bread?(clock>=jobs.bread.readyAt?"✅ 완성":"⏳ 가동 중"):"대기"}</span><span>🥤 음료 {jobs.drink?(clock>=jobs.drink.readyAt?"✅ 완성":"⏳ 가동 중"):"대기"}</span></div><div className="kc-live"><span>{lastNote}</span><span>완료 {total}건 · 실수 {miss}회</span></div></>}

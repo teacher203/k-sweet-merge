@@ -59,7 +59,7 @@ const DECOR_BOUNDS={벽:{x:[10,90],y:[17,42],initial:[55,26]},카운터:{x:[14,8
 const DecorIcon=({id})=><img className="bakery-decor-svg" src={'/art/decor/'+id+'.svg'} alt="" loading="eager" draggable={false}/>
 function App(){
  const [s,setS]=useState(load);
- const [tab,setTab]=useState('cafe');
+ const [tab,setTab]=useState('club');
  const [msg,setMsg]=useState('귀여운 카페가 문을 열었어요! 🧁');
  const [now,setNow]=useState(Date.now());
  const [rush,setRush]=useState(null);

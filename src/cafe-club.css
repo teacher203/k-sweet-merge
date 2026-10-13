@@ -74,3 +74,14 @@
 @keyframes kcCombo{to{transform:scale(1.09) rotate(-2deg)}}
 @media(prefers-reduced-motion:reduce){.kc-actor img,.kc-world-ambient,.kc-world-guests span,.kc-world-combo,.kc-actor-tool{animation:none!important}}
 @media(max-width:360px){.kc-world{min-height:236px}.kc-actor-speech{padding:4px 3px;min-width:62px}.kc-actor-tag{gap:2px}.kc-world-counter{height:16%}}
+
+/* Active crafting: player controls the moment each workstation finishes */
+.kc-stations{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:12px 0}
+.kc-stations .kc-station{display:flex;flex-direction:column;gap:7px;background:linear-gradient(145deg,#fffbf5,#fcece7);border:1px solid #e6c7c2;border-radius:14px;padding:11px 9px;min-width:0}
+.kc-station b{font-size:12px;color:#825366}.kc-station small{font-size:10px;color:#a48386;height:27px;line-height:1.3}
+.kc-station-track{height:8px;background:#ebd9d4;border-radius:99px;position:relative;overflow:hidden}
+.kc-station-track:before{content:"";position:absolute;left:54%;width:36%;top:0;height:100%;background:#eed18b70;border-left:2px solid #e9a64e;border-right:2px solid #e9a64e;z-index:1}
+.kc-station-track>span{display:block;height:100%;background:linear-gradient(90deg,#da9ba4,#ab6177);border-radius:99px;transition:width .08s linear}
+.kc-station button{padding:10px 6px;border-radius:10px;background:#a7627c;color:#fff7f0;font-size:11px;font-weight:900;min-height:36px}
+.kc-station button:disabled{background:#e6d8cf;color:#a48f8d;opacity:1}
+.kc-station.finished{border-color:#a7cba2;background:#f3fbec}

@@ -29,3 +29,10 @@
 .kc-rival{background:#f7e8ec;border-radius:13px;padding:14px;margin-top:15px}.kc-rival strong{font-size:13px}.kc-rival>div{display:flex;justify-content:space-between;gap:10px;font-size:11px;margin:14px 0}.kc-rival>div b{color:#ae526f}.kc-history{margin-top:18px}.kc-history>strong{font-size:13px}.kc-history>div{display:flex;justify-content:space-between;border-bottom:1px solid #efdedb;padding:12px 0;font-size:11px}.kc-history>div b{color:#ac6880}.kc-history>p{font-size:11px;color:#a18088}
 @keyframes kcIn{from{opacity:.3;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}@keyframes kcUrgent{to{box-shadow:0 0 0 3px #f2bdc4a1}}
 @media(max-width:355px){.kc-shell{padding:11px 8px}.kc-heading h2{font-size:21px}.kc-ticket{padding:9px}.kc-stats strong{font-size:21px}.kc-strategy-grid button{min-height:106px}}
+
+/* Dual-workstation production: baking and beverages can be processed in parallel */
+.kc-stations{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0 4px}
+.kc-stations span{font-size:11px;text-align:center;border:1px solid #e5cccd;background:#fff8ef;color:#926a73;font-weight:850;border-radius:9px;padding:10px 5px}
+.kc-ticket-actions .kc-deliver{grid-column:1/-1;background:linear-gradient(105deg,#aa5672,#d58095);color:#fff;font-size:14px;font-weight:900;min-height:54px}
+.kc-ticket-actions .kc-deliver:disabled{background:#f2e6df;color:#987e7c;opacity:1}
+.kc-ticket-actions button:disabled:not(.kc-deliver){opacity:.42}
